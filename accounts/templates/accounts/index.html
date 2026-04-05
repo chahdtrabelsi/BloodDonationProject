@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-5">Choisir votre rôle</h1>
+
+    <div class="row justify-content-center">
+        <!-- Donneur -->
+        <div class="col-md-4 text-center mb-4">
+            <h2>Donneur</h2>
+            <a href="{% url 'register_donneur' %}" class="btn btn-primary btn-lg w-100 mb-2">
+                S'inscrire comme Donneur
+            </a>
+            <a href="{% url 'dashboard_donneur' %}" class="btn btn-success btn-lg w-100">
+                Entrer comme Donneur
+            </a>
+        </div>
+
+        <!-- Hopital -->
+        <div class="col-md-4 text-center mb-4">
+            <h2>Hopital</h2>
+            <a href="{% url 'register_hopital' %}" class="btn btn-primary btn-lg w-100 mb-2">
+                S'inscrire comme Hopital
+            </a>
+            <a href="{% url 'dashboard_hopital' %}" class="btn btn-success btn-lg w-100">
+                Entrer comme Hopital
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

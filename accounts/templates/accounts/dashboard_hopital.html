@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Bienvenue {{ hopital.user.username }} - hopital : {{ hopital.nom }}</h2>
+    <p>Ville : {{ hopital.ville }} | Agrément : {{ hopital.agrement }}</p>
+
+    <hr>
+    <h4>Demandes urgentes publiées</h4>
+    <ul class="list-group mb-4">
+        {% for demande in demandes_publiees %}
+            <li class="list-group-item">
+                {{ demande.description }} - Quantité : {{ demande.quantite }} - Statut : {{ demande.statut }}
+                <a href="{% url 'demandes:modifier' demande.id %}" class="btn btn-sm btn-warning float-end">Modifier</a>
+            </li>
+        {% empty %}
+            <li class="list-group-item">Aucune demande publiée pour le moment</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'campagnes:creer_campagne' %}" class="btn btn-success">Créer une campagne de collecte</a>
+</div>
+{% endblock %}

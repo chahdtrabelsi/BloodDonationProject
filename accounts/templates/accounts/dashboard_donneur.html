@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Bienvenue {{ donneur.user.username }}</h2>
+    <p>Groupe sanguin : {{ donneur.groupe_sanguin }} | Ville : {{ donneur.ville }}</p>
+
+    <hr>
+    <h4>Appels urgents compatibles</h4>
+    <ul class="list-group mb-4">
+        {% for appel in appels_compatibles %}
+            <li class="list-group-item">
+                {{ appel.description }} - Quantité : {{ appel.quantite }} - Délai : {{ appel.delai }}
+                <a href="{% url 'demandes:repondre' appel.id %}" class="btn btn-sm btn-primary float-end">Répondre</a>
+            </li>
+        {% empty %}
+            <li class="list-group-item">Aucun appel urgent pour le moment</li>
+        {% endfor %}
+    </ul>
+
+    <h4>Historique des dons</h4>
+    <ul class="list-group">
+        {% for don in historique_dons %}
+            <li class="list-group-item">
+                {{ don.date_don }} - {{ don.hopital.nom }} - Notes : {{ don.notes }}
+            </li>
+        {% empty %}
+            <li class="list-group-item">Aucun don enregistré</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
