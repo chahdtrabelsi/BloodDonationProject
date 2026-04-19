@@ -2,7 +2,7 @@ from django.db import models
 from accounts.models import Donneur, Hopital
 
 class Don(models.Model):
-    donneur = models.ForeignKey(Donneur, on_delete=models.CASCADE) 
+    donneur = models.ForeignKey(Donneur, on_delete=models.CASCADE,related_name='dons') 
     hopital = models.ForeignKey(Hopital, on_delete=models.CASCADE)   
     date_don = models.DateField()                                     
     notes = models.TextField(blank=True, null=True)                   

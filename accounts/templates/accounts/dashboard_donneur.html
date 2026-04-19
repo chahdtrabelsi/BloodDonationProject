@@ -1,32 +1,180 @@
 {% extends 'base.html' %}
-
 {% block content %}
-<div class="container mt-4">
-    <h2>Bienvenue {{ donneur.user.username }}</h2>
-    <p>Groupe sanguin : {{ donneur.groupe_sanguin }} | Ville : {{ donneur.ville }}</p>
 
+<style>
+body {
+    background: #f4f6f9;
+    font-family: Arial;
+}
+
+/* SIDEBAR */
+.sidebar {
+    background: linear-gradient(180deg, #c0392b, #e74c3c);
+    min-height: 100vh;
+    color: white;
+    padding: 20px;
+}
+
+.profile-img {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    border: 3px solid white;
+}
+
+.menu-item {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 10px;
+    cursor: pointer;
+    color: white;
+}
+
+.menu-item:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+/* CONTENT */
+.card-box {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+</style>
+
+<div class="container-fluid">
+<div class="row">
+
+<!-- SIDEBAR -->
+<div class="col-md-3 sidebar text-center">
+    <img src="/static/images/defaultt.jpg" class="profile-img">
+    <h5>MR/Mme {{ donneur.user.username }}</h5>
+    
     <hr>
-    <h4>Appels urgents compatibles</h4>
-    <ul class="list-group mb-4">
-        {% for appel in appels_compatibles %}
-            <li class="list-group-item">
-                {{ appel.description }} - Quantité : {{ appel.quantite }} - Délai : {{ appel.delai }}
-                <a href="{% url 'demandes:repondre' appel.id %}" class="btn btn-sm btn-primary float-end">Répondre</a>
-            </li>
-        {% empty %}
-            <li class="list-group-item">Aucun appel urgent pour le moment</li>
-        {% endfor %}
-    </ul>
 
-    <h4>Historique des dons</h4>
-    <ul class="list-group">
-        {% for don in historique_dons %}
-            <li class="list-group-item">
-                {{ don.date_don }} - {{ don.hopital.nom }} - Notes : {{ don.notes }}
-            </li>
-        {% empty %}
-            <li class="list-group-item">Aucun don enregistré</li>
-        {% endfor %}
-    </ul>
+    <div class="menu-item" onclick="show('personal')">👤 Données personnelles</div>
+    <div class="menu-item" onclick="show('eligibility')">📄 Éligibilité</div>
+    <div class="menu-item" onclick="show('history')">📜 Historique des dons</div>
+    <div class="menu-item" onclick="show('alerts')">🚨 Appels urgents</div>
+    <div class="menu-item" onclick="show('add_don')">➕ Ajouter un don</div>
 </div>
+
+<!-- CONTENT -->
+<div class="col-md-9 p-4">
+
+    <!-- PERSONAL -->
+    <div id="personal" class="card-box mb-3">
+        <h4>👤 Données personnelles</h4>
+        <p>Nom: {{ donneur.user.username }}</p>
+        <p>Email: {{ donneur.user.email }}</p>
+        <p>Ville: {{ donneur.ville }}</p>
+        <p>Groupe sanguin: {{ donneur.groupe_sanguin }}</p>
+    </div>
+
+    <!-- ELIGIBILITY -->
+    <div id="eligibility" class="card-box mb-3" style="display:none;">
+        <h4>📄 Éligibilité</h4>
+
+        {% if est_eligible %}
+            <p>✔ Bonjour, vous êtes autorisé à donner du sang.</p>
+            <a href="{% url 'fiche_eligibilite' %}" target="_blank" class="btn btn-danger">
+    Imprimer fiche
+</a>
+        {% else %}
+            <p>⏳ Vous n’êtes pas encore éligible.</p>
+        {% endif %}
+    </div>
+
+    
+    <div id="history" class="card-box mb-3" style="display:none;">
+    <h4>📜 Historique des dons</h4>
+
+    {% for don in historique_dons %}
+        <p>
+            📅 {{ don.date_don }} - 🏥 {{ don.hopital.nom }}
+
+            {% if don.valide %}
+                <span class="badge bg-success">✔ Validé</span>
+            {% else %}
+                <span class="badge bg-warning">⏳ En attente</span>
+            {% endif %}
+        </p>
+    {% empty %}
+        <p>Aucun don enregistré</p>
+    {% endfor %}
+</div>
+    
+    <div id="alerts" class="card-box mb-3" style="display:none;">
+    <h4>🚨 Appels urgents compatibles</h4>
+
+    {% for appel in appels_compatibles %}
+        <p>
+            {{ appel.description }} - {{ appel.quantite }}
+
+            <a href="{% url 'demandes:repondre' appel.id %}"
+               class="btn btn-sm btn-danger float-end">
+                Répondre
+            </a>
+        </p>
+    {% empty %}
+        <p>Aucun appel urgent</p>
+    {% endfor %}
+</div>
+<div id="add_don" class="card-box mb-3" style="display:none;">
+    <h4>➕ Ajouter un don</h4>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="mb-2">
+            <label>Hôpital</label>
+            <select name="hopital" class="form-control">
+                {% for hopital in hopitaux %}
+                    <option value="{{ hopital.id }}">{{ hopital.nom }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-2">
+            <label>Date du don</label>
+            <input type="date" name="date_don" class="form-control" required>
+        </div>
+
+        <div class="mb-2">
+            <label>Notes</label>
+            <textarea name="notes" class="form-control"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-danger">
+            Enregistrer
+        </button>
+    </form>
+</div>
+
+</div>
+</div>
+
+</div>
+
+
+<script>
+function show(id) {
+
+    let sections = document.querySelectorAll('.card-box');
+
+    sections.forEach(sec => {
+        sec.style.display = "none";
+    });
+
+    document.getElementById(id).style.display = "block";
+}
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("personal").style.display = "block";
+});
+</script>
+
 {% endblock %}

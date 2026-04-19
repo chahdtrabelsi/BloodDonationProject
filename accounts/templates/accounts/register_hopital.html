@@ -1,9 +1,80 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<h2>Inscription Hopital</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">S'inscrire</button>
-</form>
+<div class="container mt-5 col-md-6">
+
+    <div class="card shadow p-4">
+
+        <h3 class="text-center mb-4">🏥 Inscription Hôpital</h3>
+
+        <!-- messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-info">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- errors -->
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                {{ form.errors }}
+            </div>
+        {% endif %}
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            <!-- Username -->
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                {{ form.username }}
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                {{ form.email }}
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                {{ form.password }}
+            </div>
+
+            <!-- Nom -->
+            <div class="mb-3">
+                <label class="form-label">Nom de l'hôpital</label>
+                {{ form.nom }}
+            </div>
+
+            <!-- Adresse -->
+            <div class="mb-3">
+                <label class="form-label">Adresse</label>
+                {{ form.adresse }}
+            </div>
+
+            <!-- Ville -->
+            <div class="mb-3">
+                <label class="form-label">Ville</label>
+                {{ form.ville }}
+            </div>
+
+            <!-- Agrément -->
+            <div class="mb-3">
+                <label class="form-label">Numéro d'agrément</label>
+                {{ form.agrement }}
+            </div>
+
+            <button type="submit" class="btn btn-success w-100">
+                S'inscrire
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
 {% endblock %}

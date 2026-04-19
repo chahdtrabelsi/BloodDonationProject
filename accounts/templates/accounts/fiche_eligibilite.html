@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+body {
+    font-family: Arial;
+    background: #f4f6f9;
+}
+
+.box {
+    border: 2px solid #902323;
+    padding: 30px;
+    border-radius: 10px;
+    background: white;
+    max-width: 800px;
+    margin: auto;
+    margin-top: 30px;
+}
+
+.title {
+    text-align: center;
+    color: #902323;
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+.signature {
+    margin-top: 60px;
+    text-align: right;
+}
+
+.actions {
+    margin-top: 25px;
+    text-align: center;
+}
+</style>
+
+<div class="container">
+
+<div class="box">
+
+    <div class="title">
+        <b>FICHE D’ÉLIGIBILITÉ DON DE SANG</b>
+    </div>
+
+    <p>Bonjour Mr/Mme <b>{{ donneur.user.username }}</b>,</p>
+
+    <p>
+        Nous vous informons que, suite à votre dernier don
+        {% if dernier_don %}
+            effectué le <b>{{ dernier_don.date_don }}</b>
+        {% endif %}
+        , vous êtes déclaré <b>ÉLIGIBLE</b> pour un nouveau don de sang.
+    </p>
+
+    <p>
+        Groupe sanguin : <b>{{ donneur.groupe_sanguin }}</b><br>
+        Ville : <b>{{ donneur.ville }}</b>
+    </p>
+
+    <p>
+        Cette attestation est délivrée par la plateforme tunisienne <b>NAFAS</b>
+        et reste valable selon les normes médicales en vigueur.
+    </p>
+
+    <div class="signature">
+        <b>Signature du centre</b><br>
+        🏥 NAFAS Campagne
+    </div>
+
+</div>
+
+<!-- ACTIONS -->
+<div class="actions">
+
+    <button onclick="window.print()" class="btn btn-danger">
+        🖨 Imprimer
+    </button>
+
+    <a href="{% url 'dashboard_donneur' %}" class="btn btn-outline-danger">
+        ⬅ Retour au dashboard
+    </a>
+
+</div>
+
+</div>
+
+{% endblock %}

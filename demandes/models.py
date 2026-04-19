@@ -1,5 +1,7 @@
 from django.db import models
 from accounts.models import Hopital
+from accounts.models import Donneur
+
 
 class DemandeUrgente(models.Model):
     STATUT_CHOICES = (
@@ -15,3 +17,10 @@ class DemandeUrgente(models.Model):
 
     def __str__(self):
         return f"{self.groupe_sanguin} - {self.quantite} poches - {self.hopital.nom}"
+class ReponseAppel(models.Model):
+    donneur = models.ForeignKey(Donneur, on_delete=models.CASCADE)
+    demande = models.ForeignKey(DemandeUrgente, on_delete=models.CASCADE)
+    date_reponse = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.donneur} -> {self.demande}"

@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block styles %}
+<style>
+.custom-btn {
+    background-color: #dc3545;
+    color: white;
+    font-size: 20px;
+    padding: 12px 40px;
+    border-radius: 50px;
+    transition: 0.3s;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+    text-decoration: none;
+    display: inline-block;
+}
+body {
+    background: #ffffff;
+}
+
+
+
+.custom-btn:hover {
+    background-color: #b02a37;
+    transform: scale(1.08);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.6);
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    transition: 0.3s;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 15px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="text-center mt-5">
+
+    <!-- TITLE -->
+    <h1 class="text-danger mb-4">
+        🩸 NAFAS- نفس
+    </h1>
+    <h6>Votre plateforme tunisienne de don de sang</h6>
+    <!-- VIDEO -->
+    <div class="d-flex justify-content-center mb-4">
+        <video width="800" height="450" controls class="rounded shadow">
+            <source src="{% static 'videos/Nafas.mp4' %}" type="video/mp4">
+        </video>
+    </div>
+    <!-- CARDS SECTION -->
+<div class="container mt-5 mb-5">
+    <div class="row g-4 justify-content-center">
+
+        <!-- Card 1 -->
+        <div class="col-md-4">
+            <div class="card shadow border-0 h-100 text-center p-3">
+                <div class="card-body">
+                    <h2>❓</h2>
+                    <h5 class="card-title text-dark">Suis-je éligible au don de sang ?</h5>
+                    <p class="card-text">
+                        Découvrez si vous pouvez donner votre sang selon votre âge, votre état de santé et vos conditions médicales.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="col-md-4">
+            <div class="card shadow border-0 h-100 text-center p-3">
+                <div class="card-body">
+                    <h2>🩸</h2>
+                    <h5 class="card-title text-dark">Processus du don de sang</h5>
+                    <p class="card-text">
+                        Découvrez les étapes du don : inscription, examen médical, don et repos.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="col-md-4">
+            <div class="card shadow border-0 h-100 text-center p-3">
+                <div class="card-body">
+                    <h2>❤️</h2>
+                    <h5 class="card-title text-dark">NAFAS – Notre histoire</h5>
+                    <p class="card-text text-dark">
+                        NAFAS est une plateforme tunisienne qui vise à simplifier le don de sang et sauver des vies grâce à la technologie.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+    <!-- MESSAGE -->
+    <h3 class="mb-4 text-dark">
+        ❤️ Un message du cœur
+    </h3>
+
+    <p class="mb-4 text-dark">
+        En Tunisie, chaque goutte de sang peut sauver une vie.
+    </p>
+
+    <p>
+        Notre plateforme relie les donneurs de sang aux hôpitaux afin de faciliter l’entraide et rapprocher les gens.
+    </p>
+
+    <p class="mb-4 text-dark">
+        Nous voulons rendre le don plus simple et rapprocher l’espoir de chaque personne dans le besoin ❤️
+    </p>
+
+    <!-- BUTTON -->
+    <div class="mt-4">
+    <a href="{% url 'login' %}" class="btn btn-danger btn-lg rounded-pill px-5 shadow">
+        ❤️ Rejoignez-nous
+    </a>
+</div>
+</div>
+
+
+
+{% endblock %}

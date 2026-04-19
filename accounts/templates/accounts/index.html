@@ -1,31 +1,117 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block styles %}
+<style>
+
+/* Background soft rouge */
+body {
+    background: linear-gradient(135deg, #fff5f5, #ffffff);
+}
+
+/* Card style */
+.role-card {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: 0.3s;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.role-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 30px rgba(255,107,107,0.2);
+}
+
+/* Image */
+.role-card img {
+    height: 200px;
+    object-fit: cover;
+}
+
+.btn-red {
+    background-color: #ff6b6b !important;
+    color: white !important;
+    border-radius: 50px;
+    padding: 10px;
+    border: none;
+    transition: 0.3s;
+}
+
+
+.btn-red:hover {
+    background-color: #c34242 !important;
+    color: white !important;
+    transform: scale(1.03);
+    box-shadow: 0 6px 20px rgba(255,107,107,0.4);
+}
+
+</style>
+{% endblock %}
 
 {% block content %}
+
 <div class="container mt-5">
-    <h1 class="text-center mb-5">Choisir votre rôle</h1>
 
-    <div class="row justify-content-center">
-        <!-- Donneur -->
-        <div class="col-md-4 text-center mb-4">
-            <h2>Donneur</h2>
-            <a href="{% url 'register_donneur' %}" class="btn btn-primary btn-lg w-100 mb-2">
-                S'inscrire comme Donneur
-            </a>
-            <a href="{% url 'dashboard_donneur' %}" class="btn btn-success btn-lg w-100">
-                Entrer comme Donneur
-            </a>
+    <!-- TITLE -->
+    <h1 class="text-center text-black mb-5">
+        🩸 Bienvenu dans Nafas      _    choisissez votre role
+    </h1>
+
+    <div class="row justify-content-center g-4">
+
+        <!-- DONNEUR CARD -->
+        <div class="col-md-5">
+            <div class="card role-card">
+
+                <img src="{% static 'images/donneur.jpg' %}" alt="Donneur">
+
+                <div class="card-body text-center">
+                    <h4 class="card-title text-danger">Donneur</h4>
+
+                    <p class="text-muted">
+                        Donnez votre sang et sauvez des vies ❤️
+                    </p>
+
+                    <a href="{% url 'register_donneur' %}" class="btn btn-red w-100 mb-2">
+                        S'inscrire comme Donneur
+                    </a>
+
+                    <a href="{% url 'dashboard_donneur' %}" class="btn btn-red w-100">
+                        Entrer comme Donneur
+                    </a>
+                </div>
+
+            </div>
         </div>
 
-        <!-- Hopital -->
-        <div class="col-md-4 text-center mb-4">
-            <h2>Hopital</h2>
-            <a href="{% url 'register_hopital' %}" class="btn btn-primary btn-lg w-100 mb-2">
-                S'inscrire comme Hopital
-            </a>
-            <a href="{% url 'dashboard_hopital' %}" class="btn btn-success btn-lg w-100">
-                Entrer comme Hopital
-            </a>
+        <!-- HOPITAL CARD -->
+        <div class="col-md-5">
+            <div class="card role-card">
+
+                <img src="{% static 'images/hopital.jpg' %}" alt="Hopital">
+
+                <div class="card-body text-center">
+                    <h4 class="card-title text-danger">Hôpital</h4>
+
+                    <p class="text-muted">
+                        Trouvez rapidement des donneurs pour sauver des patients 🏥
+                    </p>
+
+                    <a href="{% url 'register_hopital' %}" class="btn btn-red w-100 mb-2">
+                        S'inscrire comme Hôpital
+                    </a>
+
+                    <a href="{% url 'dashboard_hopital' %}" class="btn btn-red w-100">
+                        Entrer comme Hôpital
+                    </a>
+                </div>
+
+            </div>
         </div>
+
     </div>
+
 </div>
+
 {% endblock %}

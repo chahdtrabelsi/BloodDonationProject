@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+body {
+    background: #f4f6f9;
+}
+
+/* CARD PRINCIPALE */
+.don-card {
+    max-width: 650px;
+    margin: auto;
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border-top: 5px solid #c0392b;
+}
+
+/* TITRE */
+.don-title {
+    text-align: center;
+    color: #c0392b;
+    font-weight: bold;
+    margin-bottom: 25px;
+}
+
+/* INFO BOX */
+.info {
+    background: #fff5f5;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    border-left: 4px solid #e74c3c;
+}
+
+/* BOUTON ROUGE PRO */
+.btn-blood {
+    background: #c0392b;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    width: 100%;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn-blood:hover {
+    background: #e74c3c;
+    transform: scale(1.02);
+}
+
+/* BOUTON RETOUR */
+.btn-back {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    color: #555;
+    text-decoration: none;
+}
+
+.btn-back:hover {
+    color: #c0392b;
+}
+</style>
+
+<div class="container mt-4">
+
+    <div class="don-card">
+
+        <h3 class="don-title">🚨 Répondre à une demande urgente</h3>
+
+        <div class="info">
+            <b>🩸 Groupe sanguin :</b> {{ demande.groupe_sanguin }}
+        </div>
+
+        <div class="info">
+            <b>📦 Quantité :</b> {{ demande.quantite }}
+        </div>
+
+        <div class="info">
+            <b>📝 Description :</b> {{ demande.description }}
+        </div>
+
+        <div class="info">
+            <b>🏥 Hôpital :</b> {{ demande.hopital.nom }}
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <button type="submit" class="btn-blood">
+                ✔ Je confirme mon intention de donner
+            </button>
+        </form>
+
+        <a href="{% url 'dashboard_donneur' %}" class="btn-back">
+            ⬅ Retour au dashboard
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

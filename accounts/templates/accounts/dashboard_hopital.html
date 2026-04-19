@@ -18,6 +18,13 @@
         {% endfor %}
     </ul>
 
+    <a href="{% url 'demandes:creer_demande' %}" class="btn btn-danger">
+    ➕ Nouvelle demande urgente
+    </a>
+    <a href="{% url 'demandes:liste_demandes' %}" class="btn btn-dark">
+    📋 Voir les demandes
+</a>
+
     <a href="{% url 'campagnes:creer_campagne' %}" class="btn btn-success">Créer une campagne de collecte</a>
 </div>
 {% endblock %}

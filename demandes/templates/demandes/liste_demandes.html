@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2>📋 Liste des demandes urgentes</h2>
+
+    <div class="row">
+
+        {% for demande in demandes %}
+        <div class="col-md-4 mt-3">
+
+            <div style="background:white; padding:15px; border-radius:12px;
+                        box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+
+                <h5 style="color:#c0392b;">
+                    {{ demande.groupe_sanguin }}
+                </h5>
+
+                <p>📝 {{ demande.description }}</p>
+                <p>🩸 Quantité: {{ demande.quantite }}</p>
+                <p>📅 Délai: {{ demande.delai }}</p>
+
+                <span class="badge bg-danger">
+                    {{ demande.statut }}
+                </span>
+
+            </div>
+
+        </div>
+        {% empty %}
+            <p>Aucune demande trouvée</p>
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}
