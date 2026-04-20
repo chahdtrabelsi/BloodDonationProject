@@ -19,3 +19,4 @@ def ajouter_don(request):
         )
 
         return redirect("accounts:dashboard_donneur")
+    

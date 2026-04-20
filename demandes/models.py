@@ -2,7 +2,6 @@ from django.db import models
 from accounts.models import Hopital
 from accounts.models import Donneur
 
-
 class DemandeUrgente(models.Model):
     STATUT_CHOICES = (
         ('Ouvert', 'Ouvert'),

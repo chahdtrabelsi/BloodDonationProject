@@ -10,11 +10,11 @@ def creer_demande(request):
         form = DemandeUrgenteForm(request.POST)
 
         if form.is_valid():
-            demande = form.save(commit=False)  # 🔥 مهم
+            demande = form.save(commit=False)  
 
-            demande.hopital = request.user.hopital  # ✔️ لازم تربط المستشفى
+            demande.hopital = request.user.hopital  
 
-            demande.statut = "Ouvert"  # (اختياري لكن مهم)
+            demande.statut = "Ouvert"  
 
             demande.save()
 

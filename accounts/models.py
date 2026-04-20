@@ -3,7 +3,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import timedelta
 from datetime import date
-
 class Donneur(models.Model):
     SEXE_CHOICES = [('M', 'Homme'), ('F', 'Femme')]
     GROUPE_SANGUIN_CHOICES = [

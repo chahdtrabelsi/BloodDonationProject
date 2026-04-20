@@ -189,7 +189,6 @@ def login_view(request):
 # =========================
 # LOGOUT
 # =========================
-
 def logout_view(request):
     logout(request)
     return redirect('index')
