@@ -3,126 +3,285 @@
 
 {% block styles %}
 <style>
-.custom-btn {
-    background-color: #dc3545;
-    color: white;
-    font-size: 20px;
-    padding: 12px 40px;
-    border-radius: 50px;
-    transition: 0.3s;
-    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
-    text-decoration: none;
-    display: inline-block;
-}
-body {
-    background: #ffffff;
-}
+    /* Global */
+    body {
+        background: #ffffff;
+        font-family: 'Segoe UI', system-ui, -apple-system, 'Roboto', sans-serif;
+    }
 
+    /* Titre avec dégradé rouge */
+    .hero-title {
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        background: linear-gradient(135deg, #dc3545 0%, #a71e2e 100%);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+    }
 
+    /* Cartes verticales : forme moderne, ombre, hover scale + rouge */
+    .vertical-card {
+        background: #ffffff !important;
+        border-radius: 28px;
+        transition: all 0.25s ease-in-out;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.05);
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(220, 53, 69, 0.15);
+        /* touche rouge subtile */
+        position: relative;
+        overflow: hidden;
+    }
 
-.custom-btn:hover {
-    background-color: #b02a37;
-    transform: scale(1.08);
-    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.6);
-}
+    /* Liseré rouge à gauche au hover + scale */
+    .vertical-card:hover {
+        transform: scale(1.02) translateY(-3px);
+        box-shadow: 0 20px 30px rgba(220, 53, 69, 0.2);
+        border-left: 5px solid #dc3545;
+        background: #fffcfc;
+    }
 
-.card:hover {
-    transform: translateY(-8px);
-    transition: 0.3s;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    backdrop-filter: blur(10px);
-    background: rgba(255, 255, 255, 0.85);
-    border-radius: 15px;
-}
+    /* Contenu interne aligné horizontalement (icône + texte) */
+    .card-inner {
+        display: flex;
+        align-items: center;
+        padding: 1.2rem 1.5rem;
+        gap: 1rem;
+    }
+
+    .card-icon {
+        font-size: 2.5rem;
+        background: #ecbcbc;
+        min-width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 60px;
+        transition: 0.2s;
+    }
+
+    .vertical-card:hover .card-icon {
+        background: #dc3545;
+        color: white;
+        transform: scale(1.05);
+    }
+
+    .card-content h5 {
+        font-weight: 700;
+        margin-bottom: 0.35rem;
+        color: #1e1e2a;
+    }
+
+    .card-content p {
+        font-size: 0.9rem;
+        color: #4a4a5a;
+        margin-bottom: 0;
+        line-height: 1.4;
+    }
+
+    /* Vidéo : hauteur réduite (plus compacte) */
+    .video-wrapper {
+        background: #ffffff;
+        border-radius: 32px;
+        padding: 8px;
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(220, 53, 69, 0.2);
+    }
+
+    .video-wrapper video {
+        width: 100%;
+        border-radius: 24px;
+        height: 500px; 
+        max-height: 800px;
+        /* hauteur plus petite */
+        object-fit: cover;
+        background: #000;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Section À propos avec touches rouges */
+    .about-section {
+        background: linear-gradient(145deg, #fff8f7 0%, #ffffff 100%);
+        border-radius: 48px;
+        padding: 2.5rem 2rem;
+        margin: 2rem 0;
+        border: 1px solid #ffe0dd;
+        box-shadow: 0 8px 20px rgba(220, 53, 69, 0.05);
+    }
+
+    .stat-badge {
+        background: white;
+        border-radius: 80px;
+        padding: 0.5rem 1.2rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: #b02a37;
+        box-shadow: 0 2px 8px rgba(220, 53, 69, 0.15);
+        border: 1px solid #ffcdd2;
+    }
+
+    .heart-quote {
+        background: #fff4f2;
+        border-radius: 28px;
+        padding: 1.2rem 1.8rem;
+        border-left: 6px solid #dc3545;
+        font-size: 1rem;
+    }
+
+    /* Bouton principal plus rouge et vivant */
+    .btn-blood {
+        background: #ff0019;
+        color: white;
+        font-weight: 700;
+        padding: 14px 38px;
+        border-radius: 60px;
+        transition: all 0.25s ease;
+        box-shadow: 0 8px 18px rgba(220, 53, 69, 0.4);
+        border: none;
+    }
+
+    .btn-blood:hover {
+        background: #b02a37;
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 15px 28px rgba(220, 53, 69, 0.5);
+        color: white;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .card-inner {
+            padding: 1rem;
+        }
+
+        .video-wrapper video {
+            max-height: 220px;
+        }
+
+        .hero-title {
+            font-size: 2rem;
+        }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 
-<div class="text-center mt-5">
-
+<div class="container py-4 py-md-5">
     <!-- TITLE -->
-    <h1 class="text-danger mb-4">
-        🩸 NAFAS- نفس
-    </h1>
-    <h6>Votre plateforme tunisienne de don de sang</h6>
-    <!-- VIDEO -->
-    <div class="d-flex justify-content-center mb-4">
-        <video width="800" height="450" controls class="rounded shadow">
-            <source src="{% static 'videos/Nafas.mp4' %}" type="video/mp4">
-        </video>
+    <div class="text-center mb-4 mb-md-5">
+        <h1 class="hero-title display-4 fw-bold mb-2">
+            🩸 NAFAS <span class="text-dark">- نفس</span>
+        </h1>
+        <p class="lead text-secondary">Votre plateforme tunisienne de don de sang, rapide et humaine.</p>
+        <div class="mx-auto" style="width: 80px; height: 3px; background: #dc3545; border-radius: 3px;"></div>
     </div>
-    <!-- CARDS SECTION -->
-<div class="container mt-5 mb-5">
-    <div class="row g-4 justify-content-center">
 
-        <!-- Card 1 -->
-        <div class="col-md-4">
-            <div class="card shadow border-0 h-100 text-center p-3">
-                <div class="card-body">
-                    <h2>❓</h2>
-                    <h5 class="card-title text-dark">Suis-je éligible au don de sang ?</h5>
-                    <p class="card-text">
-                        Découvrez si vous pouvez donner votre sang selon votre âge, votre état de santé et vos conditions médicales.
-                    </p>
+    <!-- ROW : CARTES À GAUCHE (verticales bien visibles) + VIDÉO RÉDUITE À DROITE -->
+    <div class="row align-items-stretch g-4">
+        <!-- LEFT: Cartes -->
+        <div class="col-lg-6">
+            <!-- Carte 1 -->
+            <div class="vertical-card">
+                <div class="card-inner">
+                    <div class="card-icon">❓</div>
+                    <div class="card-content">
+                        <h5>Suis-je éligible au don de sang ?</h5>
+                        <p>Âge, santé, médicaments – testez votre éligibilité en 2 min (normes tunisiennes).</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Carte 2 -->
+            <div class="vertical-card">
+                <div class="card-inner">
+                    <div class="card-icon">🩸</div>
+                    <div class="card-content">
+                        <h5>Processus du don de sang</h5>
+                        <p>Accueil, questionnaire médical, prélèvement de 450ml, collation – simple et sécurisé.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Carte 3 -->
+            <div class="vertical-card">
+                <div class="card-inner">
+                    <div class="card-icon">❤️</div>
+                    <div class="card-content">
+                        <h5>NAFAS – Notre histoire</h5>
+                        <p>Née en Tunisie pour digitaliser la générosité et connecter chaque donneur aux hôpitaux.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Carte 4 (bonus réseau) -->
+            <div class="vertical-card">
+                <div class="card-inner">
+                    <div class="card-icon">🏥</div>
+                    <div class="card-content">
+                        <h5>Réseau hospitalier tunisien</h5>
+                        <p>Partenariat avec les centres de transfusion sanguine dans tout le pays.</p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Card 2 -->
-        <div class="col-md-4">
-            <div class="card shadow border-0 h-100 text-center p-3">
-                <div class="card-body">
-                    <h2>🩸</h2>
-                    <h5 class="card-title text-dark">Processus du don de sang</h5>
-                    <p class="card-text">
-                        Découvrez les étapes du don : inscription, examen médical, don et repos.
-                    </p>
+        <!-- RIGHT: Vidéo plus petite (hauteur réduite) -->
+        <div class="col-lg-6">
+            <div class="video-wrapper h-100 d-flex flex-column justify-content-center">
+                <video controls preload="metadata" poster="{% static 'images/video-poster.jpg' %}">
+                    <source src="{% static 'videos/Nafas.mp4' %}" type="video/mp4">
+                    Votre navigateur ne supporte pas la lecture vidéo.
+                </video>
+                <p class="text-muted mt-2 mb-0 text-center small">
+                    🎬 Découvrez NAFAS – Le don de sang qui sauve des vies
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION À PROPOS (détails, chiffres, message) -->
+    <div class="about-section mt-5">
+        <div class="row g-4 align-items-center">
+            <div class="col-md-7">
+                <h2 class="fw-bold" style="color: #b02a37;">Pourquoi NAFAS ? <span style="font-size:1.8rem;">🇹🇳</span></h2>
+                <p class="fs-5 mt-3">En Tunisie, le besoin en sang est constant. NAFAS (“souffle” en arabe) apporte une réponse digitale et humaine :</p>
+                <ul class="list-unstyled mt-3">
+                    <li class="mb-2">✅ <strong>Simplicité</strong> – Trouvez en temps réel les centres proches de vous.</li>
+                    <li class="mb-2">✅ <strong>Rapidité</strong> – Alertes pour les groupes sanguins rares en urgence.</li>
+                    <li class="mb-2">✅ <strong>Confiance</strong> – Chaque donneur est guidé par des professionnels.</li>
+                    <li class="mb-2">✅ <strong>Engagement citoyen</strong> – Un don peut sauver jusqu’à 3 vies.</li>
+                </ul>
+                <div class="mt-4 d-flex flex-wrap gap-3">
+                    <div class="stat-badge"><span>🏥</span> 15+ hôpitaux partenaires</div>
+                    <div class="stat-badge"><span>🩸</span> 2 500+ donneurs actifs</div>
+                    <div class="stat-badge"><span>⏱️</span> Intervention < 45 min</div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="heart-quote">
+                    <span style="font-size: 2rem;">💬</span>
+                    <p class="mt-2 mb-0 fst-italic">“NAFAS n’est pas qu’une application, c’est un pont entre la volonté de donner et l’urgence de recevoir.”</p>
+                    <footer class="mt-2 fw-semibold">— Équipe NAFAS Tunisie</footer>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Card 3 -->
-        <div class="col-md-4">
-            <div class="card shadow border-0 h-100 text-center p-3">
-                <div class="card-body">
-                    <h2>❤️</h2>
-                    <h5 class="card-title text-dark">NAFAS – Notre histoire</h5>
-                    <p class="card-text text-dark">
-                        NAFAS est une plateforme tunisienne qui vise à simplifier le don de sang et sauver des vies grâce à la technologie.
-                    </p>
-                </div>
+    <!-- MESSAGE FINAL + CTA ROUGE VIF -->
+    <div class="text-center py-4">
+        <h3 class="mb-3 text-dark fw-bold">❤️ Un message du cœur</h3>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <p class="lead text-secondary">En Tunisie, chaque goutte de sang peut sauver une vie. Notre plateforme relie les donneurs de sang aux hôpitaux pour faciliter l’entraide.</p>
+                <p class="mb-4 text-secondary">Nous voulons rendre le don plus simple et rapprocher l’espoir de chaque personne dans le besoin. ❤️</p>
             </div>
         </div>
-
+        <div class="mt-2">
+            <a href="{% url 'login' %}" class="btn btn-blood btn-lg px-5 py-3">
+                🤝 Rejoignez-nous – Devenez donneur
+            </a>
+        </div>
+        <p class="small text-muted mt-4">Ensemble, sauvons des vies, un don à la fois.</p>
     </div>
 </div>
-
-    <!-- MESSAGE -->
-    <h3 class="mb-4 text-dark">
-        ❤️ Un message du cœur
-    </h3>
-
-    <p class="mb-4 text-dark">
-        En Tunisie, chaque goutte de sang peut sauver une vie.
-    </p>
-
-    <p>
-        Notre plateforme relie les donneurs de sang aux hôpitaux afin de faciliter l’entraide et rapprocher les gens.
-    </p>
-
-    <p class="mb-4 text-dark">
-        Nous voulons rendre le don plus simple et rapprocher l’espoir de chaque personne dans le besoin ❤️
-    </p>
-
-    <!-- BUTTON -->
-    <div class="mt-4">
-    <a href="{% url 'login' %}" class="btn btn-danger btn-lg rounded-pill px-5 shadow">
-        ❤️ Rejoignez-nous
-    </a>
-</div>
-</div>
-
-
 
 {% endblock %}
