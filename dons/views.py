@@ -8,7 +8,6 @@ from .forms import DonForm
 def ajouter_don(request):
     donneur = request.user.donneur
 
-    
     if not donneur.est_eligible():
         messages.error(request, "Vous n'êtes pas éligible pour donner du sang.")
         return redirect("dashboard_donneur")
@@ -24,6 +23,8 @@ def ajouter_don(request):
 
             messages.success(request, "Don ajouté avec succès.")
             return redirect("dashboard_donneur")
+        else:
+            print("FORM ERRORS:", form.errors)  # 👈 IMPORTANT
 
     else:
         form = DonForm()
