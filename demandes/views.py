@@ -74,3 +74,16 @@ def modifier_demande(request, id):
         "form": form,
         "demande": demande
     })
+def donneurs_repondus(request, id):
+    reponses = ReponseAppel.objects.filter(demande_id=id).select_related('donneur')
+
+    return render(request, 'demandes/donneurs_repondus.html', {
+        'reponses': reponses
+    })
+def cloturer_demande(request, id):
+    demande = get_object_or_404(DemandeUrgente, id=id)
+
+    demande.statut = "Clôturé"
+    demande.save()
+
+    return redirect('accounts:dashboard_hopital')

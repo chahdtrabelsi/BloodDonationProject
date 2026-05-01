@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+    <h3>👥 Donneurs ayant répondu</h3>
+
+    {% for r in reponses %}
+        <div class="card p-2 mb-2">
+            👤 {{ r.donneur.user.username }} <br>
+            🩸 Groupe: {{ r.donneur.groupe_sanguin }} <br>
+            📅 Répondu le: {{ r.date_reponse }}
+        </div>
+    {% empty %}
+        <p class="text-muted">Aucun donneur pour cette demande</p>
+    {% endfor %}
+</div>
+
+{% endblock %}
