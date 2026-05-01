@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-4 col-md-6">
+
+    <div class="card shadow p-4">
+
+        <h3 class="mb-3">
+            ➕ Ajouter créneau
+        </h3>
+
+        <p class="text-muted">
+            Campagne: <b>{{ campagne.nom }}</b>
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label>Heure début</label>
+                {{ form.heure_debut }}
+            </div>
+
+            <div class="mb-3">
+                <label>Heure fin</label>
+                {{ form.heure_fin }}
+            </div>
+
+            <div class="mb-3">
+                <label>Capacité</label>
+                {{ form.capacite }}
+            </div>
+
+            <button class="btn btn-success w-100">
+                💾 Ajouter
+            </button>
+
+        </form>
+
+        <a href="{% url 'campagnes:mes_campagnes' %}" class="d-block text-center mt-3">
+            ⬅ Retour
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

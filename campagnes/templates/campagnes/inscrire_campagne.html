@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <!-- Campagne Info -->
+    <div class="card p-3 mb-3">
+        <h3>🏥 {{ campagne.nom }}</h3>
+
+        <p>📅 {{ campagne.date }} | 📍 {{ campagne.lieu }}</p>
+
+        <p>
+            🩸 Groupes cibles:
+            <b>{{ campagne.groupes_cibles }}</b>
+        </p>
+
+        <p>
+            👥 Capacité totale:
+            <b>{{ campagne.capacite_totale }}</b>
+        </p>
+    </div>
+
+    <!-- Créneaux -->
+    <div class="card p-3">
+
+        <h4>⏱ Choisir un créneau</h4>
+        <hr>
+
+        {% for cr in campagne.creneaux.all %}
+
+            <div class="border p-3 mb-2 rounded">
+
+                <p>
+                    🕒 {{ cr.heure_debut }} - {{ cr.heure_fin }}
+                </p>
+
+                <p>
+                    👥 Capacité: {{ cr.capacite }}
+                </p>
+
+                {% if cr.est_complet %}
+                    <span class="badge bg-danger">Complet</span>
+                {% else %}
+                    <span class="badge bg-success">
+                        {{ cr.places_restantes }} places restantes
+                    </span>
+
+                    <a href="{% url 'campagnes:inscrire_campagne' campagne.id cr.id %}"
+                       class="btn btn-danger btn-sm float-end">
+                        ❤️ S'inscrire
+                    </a>
+                {% endif %}
+
+            </div>
+
+        {% empty %}
+            <p class="text-muted">Aucun créneau disponible</p>
+        {% endfor %}
+
+    </div>
+
+    <a href="{% url 'campagnes:liste' %}" class="btn btn-secondary mt-3">
+        ⬅ Retour
+    </a>
+
+</div>
+
+{% endblock %}

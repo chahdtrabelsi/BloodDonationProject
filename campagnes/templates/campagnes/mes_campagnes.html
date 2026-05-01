@@ -1,23 +1,48 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2>Mes campagnes</h2>
 
-    {% if campagnes %}
-        <ul class="list-group mt-3">
-            {% for campagne in campagnes %}
-                <li class="list-group-item">
-                    <strong>{{ campagne.nom }}</strong><br>
-                    📍 {{ campagne.lieu }}<br>
-                    📅 {{ campagne.date }}<br>
-                    🩸 {{ campagne.groupes_cibles }}<br>
-                    👥 Capacité: {{ campagne.capacite_totale }}
-                </li>
+<div class="container mt-4">
+
+    <h3 class="mb-4">📋 Mes campagnes</h3>
+
+    <a href="{% url 'campagnes:creer_campagne' %}" class="btn btn-success mb-3">
+        ➕ Nouvelle campagne
+    </a>
+
+    {% for c in campagnes %}
+
+        <div class="card shadow p-3 mb-3">
+
+            <h5>🏥 {{ c.nom }}</h5>
+
+            <p>📅 {{ c.date }} | 📍 {{ c.lieu }}</p>
+            <p>🩸 Groupes: {{ c.groupes_cibles }}</p>
+            <p>👥 Capacité: {{ c.capacite_totale }}</p>
+
+            <hr>
+
+            <h6>⏱ Créneaux:</h6>
+
+            {% for cr in c.creneaux.all %}
+                <div class="alert alert-light border">
+                    {{ cr.heure_debut }} - {{ cr.heure_fin }}
+                    | 👥 {{ cr.capacite }}
+                </div>
+            {% empty %}
+                <p class="text-muted">Aucun créneau</p>
             {% endfor %}
-        </ul>
-    {% else %}
-        <p class="mt-3">Aucune campagne pour le moment 😢</p>
-    {% endif %}
+
+            <a href="{% url 'campagnes:ajouter_creneau' c.id %}" class="btn btn-primary btn-sm">
+                ➕ Ajouter créneau
+            </a>
+
+        </div>
+
+    {% empty %}
+        <p class="text-muted">Aucune campagne</p>
+    {% endfor %}
+
 </div>
+
 {% endblock %}

@@ -1,12 +1,49 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2>Créer une campagne</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Enregistrer</button>
-    </form>
+<div class="container mt-4 col-md-6">
+
+    <div class="card shadow p-4">
+
+        <h3 class="text-center mb-4">🏥 Créer une campagne</h3>
+
+        <form method="post">
+            {% csrf_token %}
+
+            {{ form.non_field_errors }}
+
+            <div class="mb-3">
+                <label>Nom</label>
+                {{ form.nom }}
+            </div>
+
+            <div class="mb-3">
+                <label>Date</label>
+                {{ form.date }}
+            </div>
+
+            <div class="mb-3">
+                <label>Lieu</label>
+                {{ form.lieu }}
+            </div>
+
+            <div class="mb-3">
+                <label>Groupes cibles</label>
+                {{ form.groupes_cibles }}
+            </div>
+
+            <div class="mb-3">
+                <label>Capacité totale</label>
+                {{ form.capacite_totale }}
+            </div>
+
+            <button class="btn btn-danger w-100">
+                💾 Créer campagne
+            </button>
+
+        </form>
+
+    </div>
+
 </div>
 {% endblock %}
