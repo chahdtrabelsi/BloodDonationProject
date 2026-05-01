@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block styles %}
+<style>
+
+/* ================= TITLE ================= */
+.naf-title {
+    font-weight: 800;
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, #dc3545, #a71e2e);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+
+
+/* ================= MAIN CARD ================= */
+.naf-card {
+    background: #fff;
+    border-radius: 28px;
+    padding: 28px;
+    border: 1px solid rgba(220,53,69,0.2);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+    position: relative;
+    overflow: hidden;
+}
+
+/* red glow background */
+.naf-card::before {
+    content: "";
+    position: absolute;
+    top: -120px;
+    right: -120px;
+    width: 260px;
+    height: 260px;
+    background: rgba(220,53,69,0.08);
+    border-radius: 50%;
+    filter: blur(35px);
+}
+
+/* ================= SECTION TITLES ================= */
+.section-title {
+    color: #dc3545;
+    font-weight: 700;
+    margin-top: 22px;
+}
+
+/* ================= LIST ================= */
+.naf-card ul {
+    padding-left: 18px;
+}
+
+.naf-card ul li {
+    margin-bottom: 8px;
+    color: #444;
+}
+
+/* ================= BUTTON ================= */
+.btn-home {
+    display: inline-block;
+    background: #dc3545;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: 0.3s;
+    box-shadow: 0 10px 20px rgba(220,53,69,0.3);
+}
+
+.btn-home:hover {
+    background: #b02a37;
+    transform: translateY(-3px);
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <!-- TITLE -->
+    <div class="text-center mb-4">
+        <h1 class="naf-title">🩸 Suis-je éligible ?</h1>
+        <p class="text-muted">Vérifiez rapidement si vous pouvez donner du sang en Tunisie</p>
+    </div>
+
+
+    <!-- CONTENT CARD -->
+    <div class="naf-card">
+
+        <h3 class="section-title">🎯 Critères d’éligibilité</h3>
+        <ul>
+            <li>Âge : 18 à 65 ans</li>
+            <li>Poids minimum : 50 kg</li>
+            <li>Hommes : 5 dons/an</li>
+            <li>Femmes : 3 dons/an</li>
+        </ul>
+
+        <h3 class="section-title">❤️ État de santé</h3>
+        <ul>
+            <li>Bonne santé générale obligatoire</li>
+            <li>Fièvre → attendre 2 semaines</li>
+            <li>Tatouage / piercing → 2 à 4 mois</li>
+            <li>Grossesse → exclusion temporaire</li>
+        </ul>
+
+        <h3 class="section-title">⚠️ Contre-indications</h3>
+        <ul>
+            <li>VIH / Hépatites B et C</li>
+            <li>Maladies chroniques graves</li>
+        </ul>
+
+        <h3 class="section-title">💊 Médicaments</h3>
+        <ul>
+            <li>Antibiotiques → attendre 1 semaine</li>
+            <li>Roaccutane → interdiction temporaire</li>
+        </ul>
+
+    </div>
+
+    <!-- BUTTON BACK HOME -->
+    <div class="text-center mt-4">
+        <a href="{% url 'home' %}" class="btn-home">
+            ⬅ Retour à l’accueil
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

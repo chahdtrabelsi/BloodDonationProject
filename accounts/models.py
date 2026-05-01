@@ -36,12 +36,30 @@ class Donneur(models.Model):
         return dernier_don.date_don + timedelta(days=84)
 
     def est_eligible(self):
+        mp = getattr(self, 'medicalprofile', None)
+
+        if mp is None:
+        
+            return False
+
+
+        if mp.a_tension or mp.diabete or mp.anemie or mp.maladie_sanguine:
+            return False
+
+        if mp.poids and mp.poids < 50:
+            return False
+
+        if not mp.dernier_don_medical_ok:
+            return False
+
+    
         prochaine = self.prochaine_date_don()
 
         if prochaine is None:
             return True
 
         return date.today() >= prochaine
+    
 class Hopital(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     nom = models.CharField(max_length=200)
@@ -52,3 +70,16 @@ class Hopital(models.Model):
 
     def __str__(self):
         return self.nom
+    @property
+    def medical(self):
+        return getattr(self, 'medicalprofile', None)
+
+class MedicalProfile(models.Model):
+    donneur = models.OneToOneField(Donneur, on_delete=models.CASCADE)
+
+    poids = models.PositiveIntegerField()
+    a_tension = models.BooleanField(default=False)
+    diabete = models.BooleanField(default=False)
+    anemie = models.BooleanField(default=False)
+    maladie_sanguine = models.BooleanField(default=False)
+    dernier_don_medical_ok = models.BooleanField(default=True)

@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+body {
+    background: #f4f6f9;
+    font-family: Arial;
+}
+
+/* CENTER CARD */
+.don-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 10px;
+}
+
+/* CARD */
+.don-card {
+    width: 100%;
+    max-width: 500px;
+    background: white;
+    border-radius: 18px;
+    padding: 30px;
+    box-shadow: 0 12px 30px rgba(192, 57, 43, 0.2);
+    border-top: 6px solid #c0392b;
+    transition: 0.3s;
+}
+
+.don-card:hover {
+    transform: translateY(-3px);
+}
+
+/* TITLE */
+.don-title {
+    text-align: center;
+    color: #c0392b;
+    font-weight: bold;
+    margin-bottom: 25px;
+}
+
+/* FORM FIELDS */
+.don-card form p {
+    margin-bottom: 15px;
+}
+
+.don-card input,
+.don-card select,
+.don-card textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    outline: none;
+    transition: 0.3s;
+}
+
+.don-card input:focus,
+.don-card select:focus,
+.don-card textarea:focus {
+    border-color: #c0392b;
+    box-shadow: 0 0 6px rgba(192, 57, 43, 0.2);
+}
+
+/* BUTTON */
+.don-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(90deg, #c0392b, #e74c3c);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.don-btn:hover {
+    transform: scale(1.03);
+    background: linear-gradient(90deg, #a93226, #c0392b);
+}
+
+/* BACK LINK */
+.back-link {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    color: #777;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    color: #c0392b;
+}
+</style>
+
+<div class="don-wrapper">
+
+    <div class="don-card">
+
+        <h3 class="don-title">🩸 Ajouter un don de sang</h3>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            {{ form.as_p }}
+
+            <button type="submit" class="don-btn">
+                💉 Enregistrer le don
+            </button>
+        </form>
+
+        <a href="{% url 'dashboard_donneur' %}" class="back-link">
+            ⬅ Retour au dashboard
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

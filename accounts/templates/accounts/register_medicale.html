@@ -14,7 +14,7 @@
     padding:30px;
     border-radius:15px;
     width:100%;
-    max-width:420px;
+    max-width:520px;
     box-shadow:0 10px 30px rgba(0,0,0,0.1);
 }
 
@@ -25,6 +25,10 @@
     font-weight:bold;
 }
 
+.form-check{
+    margin:5px 0;
+}
+
 .btn-red{
     background:linear-gradient(180deg,#c0392b,#e74c3c);
     color:white;
@@ -33,24 +37,40 @@
     padding:10px;
     border-radius:30px;
 }
-.btn-red:hover{
-    background:#a93226;
-}
 </style>
 
 <div class="auth-wrapper">
 
     <div class="auth-card">
 
-        <h2 class="auth-title">🩸 Connexion</h2>
+        <h2 class="auth-title">📄 Dossier médical</h2>
 
         <form method="post">
             {% csrf_token %}
 
-            {{ form.as_p }}
+            <div class="mb-2">
+                <label>Poids</label>
+                {{ form.poids }}
+            </div>
 
-            <button class="btn-red mt-2">
-                Se connecter
+            <div class="form-check">
+                {{ form.a_tension }} Tension
+            </div>
+
+            <div class="form-check">
+                {{ form.diabete }} Diabète
+            </div>
+
+            <div class="form-check">
+                {{ form.anemie }} Anémie
+            </div>
+
+            <div class="form-check mb-3">
+                {{ form.maladie_sanguine }} Maladie sanguine
+            </div>
+
+            <button class="btn-red">
+                Terminer inscription
             </button>
 
         </form>

@@ -1,3 +1,8 @@
-from . import views
 from django.urls import path
-path('ajouter-don/', views.ajouter_don, name='ajouter_don')
+from . import views
+
+app_name = "dons"
+
+urlpatterns = [
+    path('ajouter/', views.ajouter_don, name='ajouter_don'),
+]

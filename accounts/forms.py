@@ -1,5 +1,5 @@
 from django import forms
-from .models import Donneur, Hopital
+from .models import Donneur, Hopital,MedicalProfile
 
 
 class DonneurRegisterForm(forms.ModelForm):
@@ -20,9 +20,11 @@ class HopitalRegisterForm(forms.ModelForm):
     class Meta:
         model = Hopital
         fields = ['nom', 'adresse', 'ville', 'agrement']
-        widgets = {
-            'nom': forms.TextInput(attrs={'class': 'form-control'}),
-            'adresse': forms.TextInput(attrs={'class': 'form-control'}),
-            'ville': forms.TextInput(attrs={'class': 'form-control'}),
-            'agrement': forms.TextInput(attrs={'class': 'form-control'}),
-        }
+        
+
+
+class MedicalProfileForm(forms.ModelForm):
+
+    class Meta:
+        model = MedicalProfile
+        fields = ['poids', 'a_tension', 'diabete', 'anemie', 'maladie_sanguine']

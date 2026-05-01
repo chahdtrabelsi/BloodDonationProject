@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('accounts/', include('accounts.urls')),
+    path('dons/', include(('dons.urls', 'dons'), namespace='dons')),
 
     path('campagnes/', include(('campagnes.urls', 'campagnes'), namespace='campagnes')),
 
