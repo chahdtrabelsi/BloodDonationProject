@@ -29,10 +29,16 @@ body {
     margin: 5px 0;
     border-radius: 10px;
     cursor: pointer;
+    transition: 0.3s;
 }
 
 .menu-item:hover {
     background: rgba(255,255,255,0.2);
+}
+
+.menu-item.active {
+    background: rgba(255,255,255,0.3);
+    font-weight: bold;
 }
 
 .card-box {
@@ -40,6 +46,7 @@ body {
     padding: 20px;
     border-radius: 15px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: 0.3s;
 }
 </style>
 
@@ -48,142 +55,295 @@ body {
 
 <!-- SIDEBAR -->
 <div class="col-md-3 sidebar text-center">
-
-    <img src="{% static 'images/defaultt.jpg' %}" class="profile-img">
-
+    <img src="{{ donneur.photo.url|default:'/static/images/defaultt.jpg' }}" class="profile-img">
     <h5>MR/Mme {{ donneur.user.username }}</h5>
-
     <hr>
 
-    <div class="menu-item" onclick="show('personal')">👤 Données personnelles</div>
-    <div class="menu-item" onclick="show('medical')">📄 Dossier médical</div>
-    <div class="menu-item" onclick="show('eligibility')">📄 Éligibilité</div>
-    <div class="menu-item" onclick="show('history')">📜 Historique</div>
-    <div class="menu-item" onclick="show('alerts')">🚨 Appels urgents</div>
-    <div class="menu-item" onclick="show('add_don')">➕ Ajouter un don</div>
-
+    <div class="menu-item active" onclick="showSection(event,'home')">🏠 Accueil</div>
+    <div class="menu-item" onclick="showSection(event,'personal')">👤 Données personnelles</div>
+    <div class="menu-item" onclick="showSection(event,'medical')">📄 Dossier médical</div>
+    <div class="menu-item" onclick="showSection(event,'eligibility')">📄 Éligibilité</div>
+    <div class="menu-item" onclick="showSection(event,'history')">📜 Historique</div>
+    <div class="menu-item" onclick="showSection(event,'alerts')">🚨 Appels urgents</div>
+    <div class="menu-item" onclick="showSection(event,'add_don')">➕ Ajouter un don</div>
+    <div class="menu-item" onclick="showSection(event,'campagnes')">
+    🏥 Participer à une campagne</div>
+<div class="menu-item" onclick="showSection(event,'campagne_history')">
+📊 Historique campagnes
+</div>
 </div>
 
 <!-- CONTENT -->
 <div class="col-md-9 p-4">
 
-<!-- PERSONAL -->
-<div id="personal" class="card-box mb-3">
-    <h4>👤 Données personnelles</h4>
-    <p>Nom: {{ donneur.user.username }}</p>
-    <p>Email: {{ donneur.user.email }}</p>
-    <p>Ville: {{ donneur.ville }}</p>
-    <p>Groupe sanguin: {{ donneur.groupe_sanguin }}</p>
+<!-- HOME -->
+<div id="home" class="card-box section mb-3">
+    <h4>👋 Bonjour Mr/Mme {{ donneur.user.username }}</h4>
+    <hr>
+
+    {% if dernier_don %}
+        <p>🩸 Dernier don : <b>{{ dernier_don.date_don }}</b></p>
+        <p>📅 Prochain don possible : <b>{{ prochain_don }}</b></p>
+    {% else %}
+        <p class="text-muted">Vous n’avez pas encore effectué de don</p>
+    {% endif %}
+
+    <hr>
+
+    {% if est_eligible %}
+        <div class="alert alert-success">✔ Vous pouvez donner du sang</div>
+    {% else %}
+        <div class="alert alert-warning">⏳ Vous n’êtes pas encore éligible</div>
+    {% endif %}
+
+    <p>🚨 Appels urgents disponibles : <b>{{ appels_compatibles|length }}</b></p>
 </div>
 
+<!-- PERSONAL -->
+<div id="personal" class="card-box section mb-3" style="display:none;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="mb-0">👤 Données personnelles</h4>
+
+        <a href="{% url 'edit_donneur' %}" class="btn btn-sm btn-outline-primary">
+            ✏️ Modifier
+        </a>
+    </div>
+
+    <hr>
+
+    <div class="row">
+        <div class="col-md-6 mb-2">
+            <strong>Nom :</strong><br>
+            {{ donneur.user.username }}
+        </div>
+
+        <div class="col-md-6 mb-2">
+            <strong>Email :</strong><br>
+            {{ donneur.user.email }}
+        </div>
+
+        <div class="col-md-6 mb-2">
+            <strong>Ville :</strong><br>
+            {{ donneur.ville }}
+        </div>
+
+        <div class="col-md-6 mb-2">
+            <strong>Groupe sanguin :</strong><br>
+            <span class="badge bg-danger">
+                {{ donneur.groupe_sanguin }}
+            </span>
+        </div>
+
+        <div class="col-md-6 mb-2">
+            <strong>Sexe :</strong><br>
+            {{ donneur.sexe }}
+        </div>
+    </div>
+</div>
 <!-- MEDICAL -->
-<div id="medical" class="card-box mb-3" style="display:none;">
-    <h4>📄 Dossier médical</h4>
+<div id="medical" class="card-box section mb-3" style="display:none;">
+
+    <!-- HEADER + BUTTON -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="mb-0">📄 Dossier médical</h4>
+
+        <a href="{% url 'edit_medical' %}" class="btn btn-sm btn-outline-danger">
+            ✏️ Modifier
+        </a>
+    </div>
+
+    <hr>
 
     {% if medical %}
-        <p>Poids: <b>{{ medical.poids }} kg</b></p>
 
-        <p>Tension:
-            {% if medical.a_tension %}<span class="text-danger">❌ Oui</span>
-            {% else %}<span class="text-success">✔ Non</span>{% endif %}
-        </p>
+        <div class="row">
 
-        <p>Diabète:
-            {% if medical.diabete %}<span class="text-danger">❌ Oui</span>
-            {% else %}<span class="text-success">✔ Non</span>{% endif %}
-        </p>
+            <div class="col-md-6 mb-2">
+                <strong>Poids :</strong><br>
+                {{ medical.poids }} kg
+            </div>
 
-        <p>Anémie:
-            {% if medical.anemie %}<span class="text-danger">❌ Oui</span>
-            {% else %}<span class="text-success">✔ Non</span>{% endif %}
-        </p>
+            <div class="col-md-6 mb-2">
+                <strong>Tension :</strong><br>
+                <span class="{% if medical.a_tension %}text-danger{% else %}text-success{% endif %}">
+                    {% if medical.a_tension %}❌ Oui{% else %}✔ Non{% endif %}
+                </span>
+            </div>
 
-        <p>Maladie sanguine:
-            {% if medical.maladie_sanguine %}<span class="text-danger">❌ Oui</span>
-            {% else %}<span class="text-success">✔ Non</span>{% endif %}
-        </p>
+            <div class="col-md-6 mb-2">
+                <strong>Diabète :</strong><br>
+                <span class="{% if medical.diabete %}text-danger{% else %}text-success{% endif %}">
+                    {% if medical.diabete %}❌ Oui{% else %}✔ Non{% endif %}
+                </span>
+            </div>
+
+            <div class="col-md-6 mb-2">
+                <strong>Anémie :</strong><br>
+                <span class="{% if medical.anemie %}text-danger{% else %}text-success{% endif %}">
+                    {% if medical.anemie %}❌ Oui{% else %}✔ Non{% endif %}
+                </span>
+            </div>
+
+            <div class="col-md-6 mb-2">
+                <strong>Maladie sanguine :</strong><br>
+                <span class="{% if medical.maladie_sanguine %}text-danger{% else %}text-success{% endif %}">
+                    {% if medical.maladie_sanguine %}❌ Oui{% else %}✔ Non{% endif %}
+                </span>
+            </div>
+
+            <div class="col-md-6 mb-2">
+                <strong>Apte au don :</strong><br>
+                <span class="{% if medical.dernier_don_medical_ok %}text-success{% else %}text-danger{% endif %}">
+                    {% if medical.dernier_don_medical_ok %}✔ Oui{% else %}❌ Non{% endif %}
+                </span>
+            </div>
+
+        </div>
+
     {% else %}
+
         <p class="text-muted">Aucun dossier médical disponible</p>
+
+        <!-- bouton créer si pas encore -->
+        <a href="{% url 'edit_medical' %}" class="btn btn-danger btn-sm">
+            ➕ Ajouter dossier médical
+        </a>
+
     {% endif %}
+
 </div>
 
 <!-- ELIGIBILITY -->
-<div id="eligibility" class="card-box mb-3" style="display:none;">
+<div id="eligibility" class="card-box section mb-3" style="display:none;">
     <h4>📄 Éligibilité</h4>
 
     {% if est_eligible %}
-        <div class="alert alert-success">
-            ✔ Vous êtes éligible pour donner du sang
-        </div>
-
-        <a href="{% url 'fiche_eligibilite' %}" target="_blank" class="btn btn-danger">
-            🖨 Imprimer fiche
-        </a>
+        <div class="alert alert-success">✔ Éligible</div>
     {% else %}
-        <div class="alert alert-warning">
-            ⏳ Vous n’êtes pas encore éligible
-        </div>
+        <div class="alert alert-warning">⏳ Non éligible</div>
     {% endif %}
 </div>
 
 <!-- HISTORY -->
-<div id="history" class="card-box mb-3" style="display:none;">
+<div id="history" class="card-box section mb-3" style="display:none;">
     <h4>📜 Historique des dons</h4>
 
     {% for don in historique_dons %}
-        <p>
+        <div class="card p-2 mb-2">
             📅 {{ don.date_don }} - 🏥 {{ don.hopital.nom }}
-
-            {% if don.valide %}
-                <span class="badge bg-success">✔ Validé</span>
-            {% else %}
-                <span class="badge bg-warning">⏳ En attente</span>
-            {% endif %}
-        </p>
+            
+        </div>
     {% empty %}
         <p class="text-muted">Aucun don enregistré</p>
     {% endfor %}
 </div>
 
 <!-- ALERTS -->
-<div id="alerts" class="card-box mb-3" style="display:none;">
+<div id="alerts" class="card-box section mb-3" style="display:none;">
     <h4>🚨 Appels urgents compatibles</h4>
 
     {% for appel in appels_compatibles %}
-        <p>
-            {{ appel.description }} - {{ appel.quantite }} poches
+        <div class="card p-2 mb-2">
+            <b>{{ appel.description }}</b><br>
+            {{ appel.quantite }} poches
+
+            <p class="text-muted">⏳ Délai: {{ appel.delai }}</p>
 
             {% if est_eligible %}
-                <a href="{% url 'demandes:repondre' appel.id %}"
-                   class="btn btn-sm btn-danger float-end">
+                <a href="{% url 'demandes:repondre' appel.id %}" class="btn btn-danger btn-sm float-end">
                     Répondre
                 </a>
-            {% else %}
-                <button class="btn btn-sm btn-secondary float-end" disabled>
-                    Non éligible
-                </button>
             {% endif %}
-        </p>
+        </div>
     {% empty %}
         <p class="text-muted">Aucun appel urgent</p>
     {% endfor %}
 </div>
 
 <!-- ADD DON -->
-<div id="add_don" class="card-box mb-3" style="display:none; text-align:center;">
-
+<div id="add_don" class="card-box section mb-3 text-center" style="display:none;">
     <h4>➕ Ajouter un don</h4>
 
-    <p class="text-muted">
-        Enregistrer un don de sang se fait dans une page dédiée pour garantir la validation et l’éligibilité.
-    </p>
-
     <a href="{% url 'dons:ajouter_don' %}" class="btn btn-danger btn-lg">
-        💉 Aller à la page d’ajout
+        💉 Ajouter
     </a>
-
 </div>
+<!-- CAMPAGNES -->
+<div id="campagnes" class="card-box section mb-3" style="display:none;">
 
+    <h4>🏥 Campagnes disponibles</h4>
+
+    {% for c in campagnes %}
+
+        <div class="card p-3 mb-3 shadow-sm">
+
+            <h5>🏥 {{ c.nom }}</h5>
+
+            <p>📅 {{ c.date }} | 📍 {{ c.lieu }}</p>
+            <p>🩸 Groupes: {{ c.groupes_cibles }}</p>
+
+            <hr>
+
+            <h6>⏱ Créneaux :</h6>
+
+            {% for cr in c.creneaux.all %}
+
+                <div class="border rounded p-2 mb-2">
+
+                    <span>
+                        {{ cr.heure_debut }} - {{ cr.heure_fin }}
+                    </span>
+
+                    <span class="badge bg-info">
+                        👥 {{ cr.capacite }} places
+                    </span>
+
+                    {% if not cr.est_complet %}
+
+                        <a href="{% url 'campagnes:inscription_creneau' cr.id %}"
+                           class="btn btn-danger btn-sm float-end">
+                            S'inscrire
+                        </a>
+
+                    {% else %}
+
+                        <span class="text-danger float-end">
+                            Complet
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            {% empty %}
+                <p class="text-muted">Aucun créneau</p>
+            {% endfor %}
+
+        </div>
+
+    {% empty %}
+        <p class="text-muted">Aucune campagne disponible</p>
+    {% endfor %}
+<!--participation campagnes-->
+</div>
+<div id="campagne_history" class="card-box section mb-3" style="display:none;">
+    <h4>🏥 Historique des participations aux campagnes</h4>
+
+    {% for p in participations %}
+        <div class="card p-2 mb-2">
+            🏥 {{ p.creneau.campagne.nom }} <br>
+            📅 {{ p.creneau.campagne.date }} <br>
+            ⏰ {{ p.creneau.heure_debut }} - {{ p.creneau.heure_fin }}
+        
+            {% if p.creneau.campagne.date >= date_today %}
+                <a href="{% url 'campagnes:annuler_participation' p.id %}"
+                    class="btn btn-warning btn-sm">
+                    ❌ Annuler
+    </a></div>
+{% endif %}
+    {% empty %}
+        <p class="text-muted">Aucune participation</p>
+    {% endfor %}
 </div>
 
 </div>
@@ -191,17 +351,20 @@ body {
 </div>
 
 <script>
-function show(id) {
-    let sections = document.querySelectorAll('.card-box');
+function showSection(event, id) {
+    document.querySelectorAll('.section').forEach(sec => sec.style.display = "none");
 
-    sections.forEach(sec => sec.style.display = "none");
+    document.querySelectorAll('.menu-item').forEach(item => {
+        item.classList.remove('active');
+    });
 
-    let el = document.getElementById(id);
-    if (el) el.style.display = "block";
+    document.getElementById(id).style.display = "block";
+
+    if (event) event.currentTarget.classList.add('active');
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("personal").style.display = "block";
+    showSection(null, "home");
 });
 </script>
 

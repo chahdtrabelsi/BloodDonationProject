@@ -1,30 +1,229 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
-<div class="container mt-4">
-    <h2>Bienvenue {{ hopital.user.username }} - hopital : {{ hopital.nom }}</h2>
-    <p>Ville : {{ hopital.ville }} | Agrément : {{ hopital.agrement }}</p>
+
+<style>
+body {
+    background: #f4f6f9;
+    font-family: Arial;
+}
+
+.sidebar {
+    background: linear-gradient(180deg, #c0392b, #e74c3c);
+    min-height: 100vh;
+    color: white;
+    padding: 20px;
+}
+
+.profile-img {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    border: 3px solid white;
+    object-fit: cover;
+}
+
+.menu-item {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.menu-item:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.menu-item.active {
+    background: rgba(255,255,255,0.3);
+    font-weight: bold;
+}
+
+.card-box {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+</style>
+
+<div class="container-fluid">
+<div class="row">
+
+<!-- SIDEBAR -->
+<div class="col-md-3 sidebar text-center">
+
+    <img src="{{ hopital.photo.url|default:'/static/images/defaulthopital.png' }}"
+         class="profile-img">
+
+    <h5>{{ hopital.nom }}</h5>
 
     <hr>
-    <h4>Demandes urgentes publiées</h4>
-    <ul class="list-group mb-4">
-        {% for demande in demandes_publiees %}
-            <li class="list-group-item">
-                {{ demande.description }} - Quantité : {{ demande.quantite }} - Statut : {{ demande.statut }}
-                <a href="{% url 'demandes:modifier' demande.id %}" class="btn btn-sm btn-warning float-end">Modifier</a>
-            </li>
-        {% empty %}
-            <li class="list-group-item">Aucune demande publiée pour le moment</li>
-        {% endfor %}
-    </ul>
 
-    <a href="{% url 'demandes:creer_demande' %}" class="btn btn-danger">
-    ➕ Nouvelle demande urgente
-    </a>
-    <a href="{% url 'demandes:liste_demandes' %}" class="btn btn-dark">
-    📋 Voir les demandes
-</a>
+    <div class="menu-item active" onclick="showSection(event,'home')">🏠 Accueil</div>
+    <div class="menu-item" onclick="showSection(event,'demandes')">📄 Demandes urgentes</div>
+    <div class="menu-item" onclick="showSection(event,'campagnes')">📢 Campagnes</div>
 
-    <a href="{% url 'campagnes:creer_campagne' %}" class="btn btn-success">Créer une campagne de collecte</a>
 </div>
+
+<!-- CONTENT -->
+<div class="col-md-9 p-4">
+
+<!-- 🏠 HOME -->
+<div id="home" class="card-box section mb-3">
+
+    <h4>👋 espace hopital {{ hopital.user.username }}</h4>
+
+    <p>📍 Ville: {{ hopital.ville }}</p>
+    <p>🆔 Agrément: {{ hopital.agrement }}</p>
+
+    <hr>
+
+    <div class="row">
+
+        <div class="col-md-6">
+            <div class="border p-3 rounded text-center">
+                <h5>📄 Demandes urgentes</h5>
+                <h2>{{ demandes_publiees|length }}</h2>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="border p-3 rounded text-center">
+                <h5>📢 Campagnes</h5>
+                <h2>{{ campagnes|length }}</h2>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- 📄 DEMANDES -->
+<div id="demandes" class="card-box section mb-3" style="display:none;">
+
+    <h4>📄 Mes demandes urgentes</h4>
+
+    <a href="{% url 'demandes:creer_demande' %}"
+       class="btn btn-danger btn-sm mb-3">
+        ➕ Nouvelle demande
+    </a>
+
+    {% for demande in demandes_publiees %}
+        <div class="border p-2 mb-2">
+
+            <b>{{ demande.description }}</b><br>
+            🩸 {{ demande.quantite }} poches - {{ demande.statut }}
+
+            <div class="float-end">
+
+                <a href="{% url 'demandes:modifier' demande.id %}"
+                   class="btn btn-sm btn-warning">
+                    ✏ Modifier
+                </a>
+
+                {% if demande.statut != "Clôturé" %}
+                    <a href="{% url 'demandes:cloturer' demande.id %}"
+                       class="btn btn-sm btn-dark">
+                        🔒 Clôturer
+                    </a>
+                {% endif %}
+
+                <a href="{% url 'demandes:donneurs_repondus' demande.id %}"
+                   class="btn btn-sm btn-info">
+                    👥 Donneurs
+                </a>
+
+            </div>
+        </div>
+
+    {% empty %}
+        <p class="text-muted">Aucune demande</p>
+    {% endfor %}
+
+</div>
+
+<!-- 📢 CAMPAGNES -->
+<div id="campagnes" class="card-box section mb-3" style="display:none;">
+
+    <h4>📢 Mes campagnes</h4>
+
+    <a href="{% url 'campagnes:creer_campagne' %}"
+       class="btn btn-success btn-sm mb-3">
+        ➕ Nouvelle campagne
+    </a>
+
+    {% for c in campagnes %}
+        <div class="border p-3 mb-3">
+
+            <b>{{ c.nom }}</b><br>
+            📅 {{ c.date }} | 📍 {{ c.lieu }}<br>
+
+            <b>Capacité:</b> {{ c.capacite_totale }} |
+            <b>Groupes:</b> {{ c.groupes_cibles }}
+
+            <hr>
+
+            <b>⏱ Créneaux :</b><br>
+
+            {% for cr in c.creneaux.all %}
+                <div class="border rounded p-2 mt-2 bg-light">
+
+                    🕒 {{ cr.heure_debut }} - {{ cr.heure_fin }}<br>
+
+                    👥 {{ cr.capacite }} places
+
+                    {% if cr.est_complet %}
+                        <span class="badge bg-danger">Complet</span>
+                    {% else %}
+                        <span class="badge bg-success">
+                            {{ cr.places_restantes }} places
+                        </span>
+                    {% endif %}
+
+                </div>
+            {% empty %}
+                <p class="text-muted">Aucun créneau</p>
+            {% endfor %}
+
+            <a href="{% url 'campagnes:ajouter_creneau' c.id %}"
+               class="btn btn-primary btn-sm mt-2">
+                ➕ Ajouter créneau
+            </a>
+
+        </div>
+    {% empty %}
+        <p class="text-muted">Aucune campagne</p>
+    {% endfor %}
+
+</div>
+
+</div> <!-- end content -->
+
+</div>
+</div>
+
+<script>
+function showSection(event, id) {
+
+    document.querySelectorAll('.section').forEach(sec => {
+        sec.style.display = "none";
+    });
+
+    document.querySelectorAll('.menu-item').forEach(item => {
+        item.classList.remove('active');
+    });
+
+    document.getElementById(id).style.display = "block";
+
+    if (event) event.currentTarget.classList.add('active');
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    showSection(null, "home");
+});
+</script>
+
 {% endblock %}

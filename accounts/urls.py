@@ -18,4 +18,8 @@ urlpatterns = [
 
     path('fiche-eligibilite/', views.fiche_eligibilite, name='fiche_eligibilite'),
     path('eligibility/', views.eligibilite, name='eligibiliteGlobale'),
+
+    path('donneur/edit/', views.edit_donneur, name='edit_donneur'),
+    path('donneur/editMedical/', views.edit_medical, name='edit_medical'),
+    
 ]

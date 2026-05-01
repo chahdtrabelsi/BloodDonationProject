@@ -5,14 +5,16 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
 from datetime import date
+from django.utils.timezone import now
+from datetime import timedelta
 
-from .forms import DonneurRegisterForm, HopitalRegisterForm, MedicalProfileForm
+from .forms import DonneurRegisterForm, HopitalRegisterForm,DonneurUpdateForm,MedicalProfileForm
 from .models import Donneur, Hopital, MedicalProfile
 
 from dons.models import Don
 from demandes.models import DemandeUrgente, ReponseAppel
-
-
+from campagnes.models import Campagne,InscriptionCampagne,Creneau
+from core.utils import groupes_compatibles
 # =========================
 # HOME
 # =========================
@@ -32,7 +34,7 @@ def index(request):
 
 
 # =========================
-# REGISTER DONNEUR (STEP 1)
+# REGISTER DONNEUR
 # =========================
 def register_donneur(request):
     form = DonneurRegisterForm(request.POST or None)
@@ -59,26 +61,28 @@ def register_donneur(request):
             ville=form.cleaned_data['ville']
         )
 
+        messages.success(request, "Compte créé, complétez votre dossier médical")
+
         return redirect('register_medicale', donneur_id=donneur.id)
 
     return render(request, 'accounts/register_donneur.html', {'form': form})
-# =========================
-# MEDICAL PROFILE (STEP 2)
-# =========================
 
+
+# =========================
+# MEDICAL PROFILE
+# =========================
 def register_medicale(request, donneur_id):
     donneur = get_object_or_404(Donneur, id=donneur_id)
-
     form = MedicalProfileForm(request.POST or None)
 
     if request.method == 'POST' and form.is_valid():
-
         medical = form.save(commit=False)
         medical.donneur = donneur
         medical.save()
 
-        
         login(request, donneur.user)
+
+        messages.success(request, "Inscription terminée avec succès")
 
         return redirect('dashboard_donneur')
 
@@ -86,33 +90,35 @@ def register_medicale(request, donneur_id):
         'form': form,
         'donneur': donneur
     })
+
+
 # =========================
 # REGISTER HOPITAL
 # =========================
 def register_hopital(request):
-    if request.method == 'POST':
-        form = HopitalRegisterForm(request.POST)
+    form = HopitalRegisterForm(request.POST or None)
 
-        if form.is_valid():
-            user = User.objects.create_user(
-                username=form.cleaned_data['username'],
-                email=form.cleaned_data['email'],
-                password=form.cleaned_data['password']
-            )
+    if request.method == 'POST' and form.is_valid():
 
-            Hopital.objects.create(
-                user=user,
-                nom=form.cleaned_data['nom'],
-                adresse=form.cleaned_data['adresse'],
-                ville=form.cleaned_data['ville'],
-                agrement=form.cleaned_data['agrement']
-            )
+        user = User.objects.create_user(
+            username=form.cleaned_data['username'],
+            email=form.cleaned_data['email'],
+            password=form.cleaned_data['password']
+        )
 
-            login(request, user)
-            return redirect('dashboard_hopital')
+        Hopital.objects.create(
+            user=user,
+            nom=form.cleaned_data['nom'],
+            adresse=form.cleaned_data['adresse'],
+            ville=form.cleaned_data['ville'],
+            agrement=form.cleaned_data['agrement']
+        )
 
-    else:
-        form = HopitalRegisterForm()
+        login(request, user)
+
+        messages.success(request, "Compte hôpital créé avec succès")
+
+        return redirect('dashboard_hopital')
 
     return render(request, 'accounts/register_hopital.html', {'form': form})
 
@@ -121,22 +127,15 @@ def register_hopital(request):
 # LOGIN
 # =========================
 def login_view(request):
-    if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
+    form = AuthenticationForm(request, data=request.POST or None)
 
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
+    if request.method == 'POST' and form.is_valid():
+        user = form.get_user()
+        login(request, user)
 
-            if hasattr(user, 'donneur'):
-                return redirect('dashboard_donneur')
-            elif hasattr(user, 'hopital'):
-                return redirect('dashboard_hopital')
-            else:
-                return redirect('index')
-
-    else:
-        form = AuthenticationForm()
+        if hasattr(user, 'donneur'):
+            return redirect('dashboard_donneur')
+        return redirect('dashboard_hopital')
 
     return render(request, 'accounts/login.html', {'form': form})
 
@@ -146,6 +145,7 @@ def login_view(request):
 # =========================
 def logout_view(request):
     logout(request)
+    messages.info(request, "Déconnecté avec succès")
     return redirect('index')
 
 
@@ -154,55 +154,97 @@ def logout_view(request):
 # =========================
 @login_required
 def dashboard_donneur(request):
-    donneur = request.user.donneur
 
+    donneur = request.user.donneur
     medical = getattr(donneur, 'medicalprofile', None)
 
     historique_dons = Don.objects.filter(
-        donneur=donneur,
-        valide=True
-    ).order_by('-date_don')
+        donneur=donneur
+    ).select_related('hopital').order_by('-date_don')
+
+    dernier_don = historique_dons.first()
 
     compatibles = groupes_compatibles(donneur.groupe_sanguin)
 
+    # all campaigns
+    all_campagnes = Campagne.objects.prefetch_related('creneaux').filter(
+    date__gte=date.today()
+)
+    
+    participations = InscriptionCampagne.objects.filter(
+    donneur=donneur).select_related('creneau', 'creneau__campagne').order_by('-id')
+    # filter compatible campaigns
+    campagnes = [
+        c for c in all_campagnes
+        if any(
+            g.strip().upper() in compatibles
+            for g in (c.groupes_cibles or "").split(",")
+        )
+    ]
+
     appels_compatibles = DemandeUrgente.objects.filter(
-        groupe_sanguin__in=compatibles
+        groupe_sanguin__in=compatibles,
+        statut='Ouvert',
+        delai__gte=now().date()
+    ).exclude(
+        reponseappel__donneur=donneur
+    ).order_by('delai')
+
+    repondu_ids = set(
+        ReponseAppel.objects.filter(donneur=donneur)
+        .values_list('demande_id', flat=True)
     )
 
-    repondu_ids = ReponseAppel.objects.filter(
-        donneur=donneur
-    ).values_list('demande_id', flat=True)
+    appels_compatibles = [
+        a for a in appels_compatibles if a.id not in repondu_ids
+    ]
+
+    prochain_don = None
+    if dernier_don:
+        delai = 56 if donneur.sexe == 'Homme' else 84
+        prochain_don = dernier_don.date_don + timedelta(days=delai)
 
     return render(request, "accounts/dashboard_donneur.html", {
         "donneur": donneur,
+        "prochain_don": prochain_don,
         "medical": medical,
         "historique_dons": historique_dons,
+        "dernier_don": dernier_don,
         "appels_compatibles": appels_compatibles,
         "repondu_ids": repondu_ids,
         "est_eligible": donneur.est_eligible(),
+        "campagnes": campagnes,
+        "participations": participations,
+        "date_today": date.today(),
     })
-
-
 # =========================
 # DASHBOARD HOPITAL
 # =========================
 @login_required
 def dashboard_hopital(request):
+
     hopital = request.user.hopital
 
-    demandes_publiees = DemandeUrgente.objects.filter(hopital=hopital)
+    demandes_publiees = DemandeUrgente.objects.filter(
+        hopital=hopital
+    ).order_by('-delai')
+
+    campagnes = Campagne.objects.filter(
+        hopital=hopital
+    ).prefetch_related('creneaux').order_by('-date')
 
     return render(request, "accounts/dashboard_hopital.html", {
         "hopital": hopital,
-        "demandes_publiees": demandes_publiees
+        "demandes_publiees": demandes_publiees,
+        "campagnes": campagnes
     })
-
-
 # =========================
-# ELIGIBILITE PAGE
+# FICHE ELIGIBILITE
 # =========================
+@login_required
 def fiche_eligibilite(request):
     donneur = request.user.donneur
+
     dernier_don = donneur.dons.order_by('-date_don').first()
 
     return render(request, 'accounts/fiche_eligibilite.html', {
@@ -216,18 +258,41 @@ def eligibilite(request):
     return render(request, 'accounts/eligibiliteGlobale.html')
 
 
-# =========================
-# COMPATIBILITE BLOOD GROUP
-# =========================
-def groupes_compatibles(groupe):
-    compat = {
-        'O-': ['O-', 'O+', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'],
-        'O+': ['O+', 'A+', 'B+', 'AB+'],
-        'A-': ['A-', 'A+', 'AB-', 'AB+'],
-        'A+': ['A+', 'AB+'],
-        'B-': ['B-', 'B+', 'AB-', 'AB+'],
-        'B+': ['B+', 'AB+'],
-        'AB-': ['AB-', 'AB+'],
-        'AB+': ['AB+'],
-    }
-    return compat.get(groupe, [])
+
+@login_required
+def edit_donneur(request):
+    donneur = request.user.donneur
+    
+
+    form = DonneurRegisterForm(request.POST or None, instance=donneur)
+
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Profil mis à jour avec succès")
+        return redirect("dashboard_donneur")
+
+    return render(request, "accounts/donneur_form.html", {
+        "form": form,
+        "mode": "edit"
+    })
+    
+#update données personelles
+@login_required
+def edit_medical(request):
+    donneur = request.user.donneur
+
+    medical, created = MedicalProfile.objects.get_or_create(
+        donneur=donneur
+    )
+
+    form = MedicalProfileForm(request.POST or None, instance=medical)
+
+    if form.is_valid():
+        form.save()
+        messages.success(request, "Dossier médical mis à jour avec succès")
+        return redirect("dashboard_donneur")
+
+    return render(request, "accounts/edit_medical.html", {
+        "form": form
+    })
+

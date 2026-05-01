@@ -43,7 +43,11 @@
 
     <div class="auth-card">
 
-        <h2 class="auth-title">📄 Dossier médical</h2>
+        {% if edit_mode %}
+    <h2>✏ Modifier dossier médical</h2>
+{% else %}
+    <h2>📄 Dossier médical</h2>
+{% endif %}
 
         <form method="post">
             {% csrf_token %}
