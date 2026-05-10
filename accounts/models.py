@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import timedelta
 from datetime import date
+
 class Donneur(models.Model):
     SEXE_CHOICES = [('M', 'Homme'), ('F', 'Femme')]
     GROUPE_SANGUIN_CHOICES = [
@@ -25,7 +26,7 @@ class Donneur(models.Model):
     def __str__(self):
         return f"{self.user.username} ({self.groupe_sanguin})"
 
-    from datetime import timedelta
+    
 
     def prochaine_date_don(self):
         dernier_don = self.dons.order_by('-date_don').first()
@@ -40,6 +41,9 @@ class Donneur(models.Model):
 
     def est_eligible(self):
         mp = self.medical
+
+        if not mp:
+            return False, "Profil médical manquant"
 
         if mp.a_tension:
             return False, "Tension"

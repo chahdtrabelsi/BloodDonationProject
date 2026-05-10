@@ -137,7 +137,7 @@ def annuler_creneau(request, id):
     creneau.delete()
 
     return redirect('dashboard_hopital')
-
+@login_required
 def annuler_campagne(request, id):
 
     campagne = get_object_or_404(Campagne, id=id)
@@ -167,7 +167,7 @@ def annuler_campagne(request, id):
     # ❌ supprimer campagne
     campagne.delete()
 
-    return redirect('accounts:dashboard_hopital')
+    return redirect('dashboard_hopital')
 
 def voir_participants_creneau(request, id):
     creneau = get_object_or_404(Creneau, id=id)

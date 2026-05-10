@@ -237,7 +237,7 @@ def dashboard_donneur(request):
     donneur=donneur,
     creneau__campagne__date=tomorrow).select_related(
     "creneau__campagne")
-
+    eligible, reason = donneur.est_eligible()
     return render(request, "accounts/dashboard_donneur.html", {
         "donneur": donneur,
         "prochain_don": prochain_don,
@@ -246,8 +246,8 @@ def dashboard_donneur(request):
         "dernier_don": dernier_don,
         "appels_compatibles": appels_compatibles,
         "repondu_ids": repondu_ids,
-        "is_eligible": donneur.est_eligible()[0],
-        "eligibility_reason": donneur.est_eligible()[1],
+        "is_eligible": eligible,
+        "eligibility_reason": reason,
         "campagnes": campagnes,
         "participations": participations,
         "date_today": date.today(),
