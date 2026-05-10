@@ -237,9 +237,11 @@
         <!-- VIDEO -->
         <div class="col-lg-6">
             <div class="video-wrapper">
-                <video controls>
-                    <source src="{% static 'videos/Nafas2.mp4' %}" type="video/mp4">
-                </video>
+                {% load static %}
+
+<video controls>
+    <source src="{% static 'videos/Nafas2.mp4' %}" type="video/mp4">
+</video>
             </div>
         </div>
 
