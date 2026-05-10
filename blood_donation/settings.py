@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-04e4kn5amlc9pc8u(yrio!swq$h8a801e1^i27g!k6g$%b2jb_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['trabelsichahd.pythonanywhere.com']
 
@@ -103,7 +103,11 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
+ALLOWED_HOSTS = [
+    'trabelsichahd.pythonanywhere.com',
+    'localhost',
+    '127.0.0.1'
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
