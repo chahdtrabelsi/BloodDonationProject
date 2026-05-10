@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card-box p-4">
+
+        <h3 class="mb-4">🩸 Processus de don de sang</h3>
+
+        <p class="text-muted">
+            Voici les étapes du don de sang, de l’inscription jusqu’à la récupération.
+        </p>
+
+        <hr>
+
+        <!-- STEP 1 -->
+        <div class="mb-4">
+            <h5>1️⃣ Inscription</h5>
+            <p>
+                Le donneur s’inscrit sur la plateforme ou dans l’hôpital partenaire.
+                Les informations personnelles et médicales sont vérifiées.
+            </p>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="mb-4">
+            <h5>2️⃣ Vérification de l’éligibilité</h5>
+            <p>
+                Le système vérifie si le donneur est apte au don (âge, poids, santé, historique médical).
+            </p>
+        </div>
+
+        <!-- STEP 3 -->
+        <div class="mb-4">
+            <h5>3️⃣ Prélèvement sanguin</h5>
+            <p>
+                Le don est effectué dans un centre médical ou une campagne mobile dans des conditions sécurisées.
+            </p>
+        </div>
+
+        <!-- STEP 4 -->
+        <div class="mb-4">
+            <h5>4️⃣ Analyse du sang</h5>
+            <p>
+                Le sang est analysé pour vérifier sa compatibilité et sa sécurité avant utilisation.
+            </p>
+        </div>
+
+        <!-- STEP 5 -->
+        <div class="mb-4">
+            <h5>5️⃣ Stockage et distribution</h5>
+            <p>
+                Les poches de sang sont stockées et distribuées aux hôpitaux selon les besoins urgents.
+            </p>
+        </div>
+
+        <hr>
+
+        <div class="alert alert-info">
+            💡 Un donneur peut redonner après une période de repos (56 jours pour les hommes, 84 jours pour les femmes).
+        </div>
+
+        <a href="{% url 'home' %}" class="btn btn-danger">
+            ⬅ Retour
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -7,6 +7,7 @@ from django.contrib import messages
 from datetime import date
 from django.utils.timezone import now
 from datetime import timedelta
+from accounts.models import Notification
 
 from .forms import DonneurRegisterForm, HopitalRegisterForm,DonneurUpdateForm,MedicalProfileForm
 from .models import Donneur, Hopital, MedicalProfile
@@ -72,13 +73,21 @@ def register_donneur(request):
 # MEDICAL PROFILE
 # =========================
 def register_medicale(request, donneur_id):
+
     donneur = get_object_or_404(Donneur, id=donneur_id)
-    form = MedicalProfileForm(request.POST or None)
+
+    # prevent duplicate medical profile
+    medical, created = MedicalProfile.objects.get_or_create(donneur=donneur)
+
+    form = MedicalProfileForm(
+        request.POST or None,
+        instance=medical
+    )
 
     if request.method == 'POST' and form.is_valid():
-        medical = form.save(commit=False)
-        medical.donneur = donneur
-        medical.save()
+        obj = form.save(commit=False)
+        obj.donneur = donneur
+        obj.save()
 
         login(request, donneur.user)
 
@@ -90,7 +99,6 @@ def register_medicale(request, donneur_id):
         'form': form,
         'donneur': donneur
     })
-
 
 # =========================
 # REGISTER HOPITAL
@@ -133,20 +141,30 @@ def login_view(request):
         user = form.get_user()
         login(request, user)
 
+        # 🟡 Admin
+        if user.is_superuser:
+            return redirect('admin_dashboard')
+
+        # 🟢 Donneur
         if hasattr(user, 'donneur'):
             return redirect('dashboard_donneur')
-        return redirect('dashboard_hopital')
+
+        # 🔵 Hopital (IMPORTANT: check existence)
+        if hasattr(user, 'hopital'):
+            return redirect('dashboard_hopital')
+
+        # 🔴 fallback (safety)
+        return redirect('index')
 
     return render(request, 'accounts/login.html', {'form': form})
-
-
 # =========================
 # LOGOUT
 # =========================
 def logout_view(request):
     logout(request)
+    request.session.flush() 
     messages.info(request, "Déconnecté avec succès")
-    return redirect('index')
+    return redirect('home')
 
 
 # =========================
@@ -166,14 +184,15 @@ def dashboard_donneur(request):
 
     compatibles = groupes_compatibles(donneur.groupe_sanguin)
 
-    # all campaigns
+    # 🏥 campagnes futures compatibles
     all_campagnes = Campagne.objects.prefetch_related('creneaux').filter(
-    date__gte=date.today()
-)
-    
+        date__gte=date.today()
+    )
+
     participations = InscriptionCampagne.objects.filter(
-    donneur=donneur).select_related('creneau', 'creneau__campagne').order_by('-id')
-    # filter compatible campaigns
+        donneur=donneur
+    ).select_related('creneau', 'creneau__campagne').order_by('-id')
+
     campagnes = [
         c for c in all_campagnes
         if any(
@@ -182,6 +201,7 @@ def dashboard_donneur(request):
         )
     ]
 
+    # 🚨 appels urgents compatibles
     appels_compatibles = DemandeUrgente.objects.filter(
         groupe_sanguin__in=compatibles,
         statut='Ouvert',
@@ -199,10 +219,24 @@ def dashboard_donneur(request):
         a for a in appels_compatibles if a.id not in repondu_ids
     ]
 
+    # 📅 prochain don
     prochain_don = None
     if dernier_don:
         delai = 56 if donneur.sexe == 'Homme' else 84
         prochain_don = dernier_don.date_don + timedelta(days=delai)
+
+    # 🔔 NOTIFICATIONS (CORRIGÉ)
+    notifications = Notification.objects.filter(
+        donneur=donneur
+    ).order_by('-created_at')[:5]
+    #Rappel compagne
+    today = date.today()
+    tomorrow = today + timedelta(days=1)
+
+    rappels = InscriptionCampagne.objects.filter(
+    donneur=donneur,
+    creneau__campagne__date=tomorrow).select_related(
+    "creneau__campagne")
 
     return render(request, "accounts/dashboard_donneur.html", {
         "donneur": donneur,
@@ -212,14 +246,21 @@ def dashboard_donneur(request):
         "dernier_don": dernier_don,
         "appels_compatibles": appels_compatibles,
         "repondu_ids": repondu_ids,
-        "est_eligible": donneur.est_eligible(),
+        "is_eligible": donneur.est_eligible()[0],
+        "eligibility_reason": donneur.est_eligible()[1],
         "campagnes": campagnes,
         "participations": participations,
         "date_today": date.today(),
+
+        # 🔔 notifications
+        "notifications": notifications,
+        "rappels": rappels,
     })
 # =========================
 # DASHBOARD HOPITAL
 # =========================
+from django.db.models import Count
+
 @login_required
 def dashboard_hopital(request):
 
@@ -227,6 +268,8 @@ def dashboard_hopital(request):
 
     demandes_publiees = DemandeUrgente.objects.filter(
         hopital=hopital
+    ).annotate(
+        total_reponses=Count('reponseappel')
     ).order_by('-delai')
 
     campagnes = Campagne.objects.filter(
@@ -236,7 +279,8 @@ def dashboard_hopital(request):
     return render(request, "accounts/dashboard_hopital.html", {
         "hopital": hopital,
         "demandes_publiees": demandes_publiees,
-        "campagnes": campagnes
+        "campagnes": campagnes,
+        "today": date.today()
     })
 # =========================
 # FICHE ELIGIBILITE
@@ -279,20 +323,33 @@ def edit_donneur(request):
 #update données personelles
 @login_required
 def edit_medical(request):
+
     donneur = request.user.donneur
 
     medical, created = MedicalProfile.objects.get_or_create(
         donneur=donneur
     )
 
-    form = MedicalProfileForm(request.POST or None, instance=medical)
+    form = MedicalProfileForm(
+        request.POST or None,
+        instance=medical
+    )
 
-    if form.is_valid():
-        form.save()
-        messages.success(request, "Dossier médical mis à jour avec succès")
+    if request.method == "POST" and form.is_valid():
+
+        obj = form.save(commit=False)
+        obj.donneur = donneur
+        obj.save()
+
         return redirect("dashboard_donneur")
 
     return render(request, "accounts/edit_medical.html", {
         "form": form
     })
 
+def processus_don(request):
+    return render(request, "accounts/processus-don.html")
+
+
+def notre_histoire(request):
+    return render(request, 'accounts/notre_histoire.html')

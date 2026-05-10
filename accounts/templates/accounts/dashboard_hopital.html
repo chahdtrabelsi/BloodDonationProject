@@ -29,7 +29,6 @@ body {
     margin: 5px 0;
     border-radius: 10px;
     cursor: pointer;
-    transition: 0.3s;
 }
 
 .menu-item:hover {
@@ -45,7 +44,6 @@ body {
     background: white;
     padding: 20px;
     border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 </style>
 
@@ -59,11 +57,10 @@ body {
          class="profile-img">
 
     <h5>{{ hopital.nom }}</h5>
-
     <hr>
 
     <div class="menu-item active" onclick="showSection(event,'home')">🏠 Accueil</div>
-    <div class="menu-item" onclick="showSection(event,'demandes')">📄 Demandes urgentes</div>
+    <div class="menu-item" onclick="showSection(event,'demandes')">📄 Demandes</div>
     <div class="menu-item" onclick="showSection(event,'campagnes')">📢 Campagnes</div>
 
 </div>
@@ -71,159 +68,229 @@ body {
 <!-- CONTENT -->
 <div class="col-md-9 p-4">
 
-<!-- 🏠 HOME -->
+<!-- HOME -->
 <div id="home" class="card-box section mb-3">
 
-    <h4>👋 espace hopital {{ hopital.user.username }}</h4>
+    <h4>👋 Espace hôpital {{ hopital.user.username }}</h4>
 
-    <p>📍 Ville: {{ hopital.ville }}</p>
-    <p>🆔 Agrément: {{ hopital.agrement }}</p>
+    <p>📍 {{ hopital.ville }}</p>
+    <p>🆔 {{ hopital.agrement }}</p>
 
     <hr>
+    {% if not hopital.valide %}
+<div class="alert alert-warning">
+    ⏳ Votre compte est en attente de validation admin
+</div>
+{% endif %}
+
+    <div class="row">
+        <div class="col-md-6">
+            <h5>📄 Demandes</h5>
+            <h2>{{ demandes_publiees|length }}</h2>
+        </div>
+
+        <div class="col-md-6">
+            <h5>📢 Campagnes</h5>
+            <h2>{{ campagnes|length }}</h2>
+        </div>
+    </div>
+
+</div>
+
+<!-- DEMANDES -->
+<!-- DEMANDES -->
+<div id="demandes" class="card-box section mb-3" style="display:none;">
+
+    <h4>📄 Demandes urgentes</h4>
+
+    <a href="{% url 'demandes:creer_demande' %}" class="btn btn-danger btn-sm mb-3">
+        ➕ Nouvelle demande
+    </a>
 
     <div class="row">
 
-        <div class="col-md-6">
-            <div class="border p-3 rounded text-center">
-                <h5>📄 Demandes urgentes</h5>
-                <h2>{{ demandes_publiees|length }}</h2>
-            </div>
-        </div>
+        {% for demande in demandes_publiees %}
 
-        <div class="col-md-6">
-            <div class="border p-3 rounded text-center">
-                <h5>📢 Campagnes</h5>
-                <h2>{{ campagnes|length }}</h2>
+            <div class="col-md-4 mt-3">
+
+                <div style="
+                    background:white;
+                    padding:15px;
+                    border-radius:12px;
+                    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+                    height:100%;
+                    border-top:4px solid #e74c3c;
+                ">
+
+                    <h5 style="color:#c0392b;">
+                        🩸 {{ demande.groupe_sanguin }}
+                    </h5>
+
+                    <p>📝 {{ demande.description }}</p>
+                    <p>📦 Quantité : {{ demande.quantite }} poches</p>
+                    <p>📅 Délai : {{ demande.delai }}</p>
+
+                    <span class="badge bg-danger">
+                        {{ demande.statut }}
+                    </span>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-end gap-2">
+
+                        <a href="{% url 'demandes:modifier' demande.id %}"
+                           class="btn btn-warning btn-sm">
+                            ✏
+                        </a>
+
+                        {% if demande.statut != "Clôturé" %}
+                            <a href="{% url 'demandes:cloturer' demande.id %}"
+                               class="btn btn-dark btn-sm">
+                                🔒
+                            </a>
+                        {% endif %}
+
+                        {% if demande.statut == "Clôturé" and demande.delai >= today %}
+                            <a href="{% url 'demandes:reouvrir' demande.id %}"
+                               class="btn btn-success btn-sm">
+                                🔓
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'demandes:donneurs_repondus' demande.id %}"
+                        class="btn btn-info btn-sm">
+                        👥 Réponses
+                        </a>
+
+                    </div>
+
+                </div>
+
             </div>
-        </div>
+
+        {% empty %}
+
+            <p>Aucune demande trouvée</p>
+
+        {% endfor %}
 
     </div>
 
 </div>
 
-<!-- 📄 DEMANDES -->
-<div id="demandes" class="card-box section mb-3" style="display:none;">
-
-    <h4>📄 Mes demandes urgentes</h4>
-
-    <a href="{% url 'demandes:creer_demande' %}"
-       class="btn btn-danger btn-sm mb-3">
-        ➕ Nouvelle demande
-    </a>
-
-    {% for demande in demandes_publiees %}
-        <div class="border p-2 mb-2">
-
-            <b>{{ demande.description }}</b><br>
-            🩸 {{ demande.quantite }} poches - {{ demande.statut }}
-
-            <div class="float-end">
-
-                <a href="{% url 'demandes:modifier' demande.id %}"
-                   class="btn btn-sm btn-warning">
-                    ✏ Modifier
-                </a>
-
-                {% if demande.statut != "Clôturé" %}
-                    <a href="{% url 'demandes:cloturer' demande.id %}"
-                       class="btn btn-sm btn-dark">
-                        🔒 Clôturer
-                    </a>
-                {% endif %}
-
-                <a href="{% url 'demandes:donneurs_repondus' demande.id %}"
-                   class="btn btn-sm btn-info">
-                    👥 Donneurs
-                </a>
-
-            </div>
-        </div>
-
-    {% empty %}
-        <p class="text-muted">Aucune demande</p>
-    {% endfor %}
-
-</div>
-
 <!-- 📢 CAMPAGNES -->
-<div id="campagnes" class="card-box section mb-3" style="display:none;">
+<div id="campagnes" class="section mb-3" style="display:none;">
 
-    <h4>📢 Mes campagnes</h4>
+    <h4 class="mb-3">📢 Mes campagnes</h4>
 
     <a href="{% url 'campagnes:creer_campagne' %}"
        class="btn btn-success btn-sm mb-3">
         ➕ Nouvelle campagne
     </a>
 
-    {% for c in campagnes %}
-        <div class="border p-3 mb-3">
+    <div class="row">
 
-            <b>{{ c.nom }}</b><br>
-            📅 {{ c.date }} | 📍 {{ c.lieu }}<br>
+        {% for c in campagnes %}
 
-            <b>Capacité:</b> {{ c.capacite_totale }} |
-            <b>Groupes:</b> {{ c.groupes_cibles }}
+            <!-- CARD CAMPAGNE -->
+            <div class="col-md-6 mb-3">
 
-            <hr>
+                <div class="card shadow-sm border-0 h-100">
 
-            <b>⏱ Créneaux :</b><br>
+                    <!-- HEADER -->
+                    <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
 
-            {% for cr in c.creneaux.all %}
-                <div class="border rounded p-2 mt-2 bg-light">
+                        <strong>{{ c.nom }}</strong>
 
-                    🕒 {{ cr.heure_debut }} - {{ cr.heure_fin }}<br>
+                        <a href="{% url 'campagnes:annuler_campagne' c.id %}"
+                           class="btn btn-dark btn-sm"
+                           onclick="return confirm('Annuler cette campagne ?')">
+                            🚨 Annuler
+                        </a>
 
-                    👥 {{ cr.capacite }} places
+                    </div>
 
-                    {% if cr.est_complet %}
-                        <span class="badge bg-danger">Complet</span>
-                    {% else %}
-                        <span class="badge bg-success">
-                            {{ cr.places_restantes }} places
-                        </span>
-                    {% endif %}
+                    <!-- BODY -->
+                    <div class="card-body">
+
+                        <p>📅 <b>{{ c.date }}</b></p>
+                        <p>📍 {{ c.lieu }}</p>
+                        
+                        <p>🩸 capacite : {{ c.capacite_total }}</p>
+
+                        <hr>
+
+                        <h6>⏱ Créneaux :</h6>
+
+                        {% for cr in c.creneaux.all %}
+
+                            <div class="border rounded p-2 mb-2 bg-light">
+
+                                🕒 {{ cr.heure_debut }} - {{ cr.heure_fin }}<br>
+
+                                👥 {{ cr.capacite }} places
+
+                                {% if cr.est_complet %}
+                                    <span class="badge bg-danger float-end">Complet</span>
+                                {% else %}
+                                    <span class="badge bg-success float-end">
+                                        {{ cr.places_restantes }}
+                                    </span>
+                                {% endif %}
+
+                                <div class="mt-2">
+
+                                    <a href="{% url 'campagnes:annuler_creneau' cr.id %}"
+                                       class="btn btn-danger btn-sm"
+                                       onclick="return confirm('Annuler ce créneau ?')">
+                                        ❌ Annuler
+                                    </a>
+                                    <a href="{% url 'campagnes:participants_creneau' cr.id %}"
+                                        class="btn btn-info btn-sm mt-2">
+                                        👥 Voir participants
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                        {% empty %}
+                            <p class="text-muted">Aucun créneau</p>
+                        {% endfor %}
+
+                        <a href="{% url 'campagnes:ajouter_creneau' c.id %}"
+                           class="btn btn-primary btn-sm mt-2">
+                            ➕ Ajouter créneau
+                        </a>
+
+                    </div>
 
                 </div>
-            {% empty %}
-                <p class="text-muted">Aucun créneau</p>
-            {% endfor %}
 
-            <a href="{% url 'campagnes:ajouter_creneau' c.id %}"
-               class="btn btn-primary btn-sm mt-2">
-                ➕ Ajouter créneau
-            </a>
+            </div>
 
-        </div>
-    {% empty %}
-        <p class="text-muted">Aucune campagne</p>
-    {% endfor %}
+        {% empty %}
+            <p class="text-muted">Aucune campagne disponible</p>
+        {% endfor %}
+
+    </div>
 
 </div>
 
-</div> <!-- end content -->
-
+</div>
 </div>
 </div>
 
 <script>
 function showSection(event, id) {
-
-    document.querySelectorAll('.section').forEach(sec => {
-        sec.style.display = "none";
-    });
-
-    document.querySelectorAll('.menu-item').forEach(item => {
-        item.classList.remove('active');
-    });
+    document.querySelectorAll('.section').forEach(s => s.style.display = "none");
+    document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
 
     document.getElementById(id).style.display = "block";
 
     if (event) event.currentTarget.classList.add('active');
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    showSection(null, "home");
-});
+document.addEventListener("DOMContentLoaded", () => showSection(null,'home'));
 </script>
 
 {% endblock %}

@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block styles %}
+<style>
+
+body {
+    background: #ffffff;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* HERO */
+.hero-section {
+    background: linear-gradient(135deg, #dc3545, #a71e2e);
+    color: white;
+    padding: 70px 30px;
+    border-radius: 30px;
+    text-align: center;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+}
+
+.hero-section h1 {
+    font-weight: 800;
+    font-size: 3rem;
+}
+
+.hero-section p {
+    font-size: 1.2rem;
+    opacity: 0.95;
+}
+
+/* CARD STYLE (comme ton design naf-card) */
+.naf-card {
+    background: #fff;
+    border-radius: 28px;
+    border: 1px solid rgba(220,53,69,0.15);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: 0.3s ease;
+}
+
+.naf-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(220,53,69,0.2);
+    border-left: 5px solid #dc3545;
+}
+
+.section-title {
+    font-weight: 800;
+    color: #b02a37;
+    margin-bottom: 15px;
+}
+
+.badge-nafas {
+    background: #fff0f1;
+    color: #b02a37;
+    padding: 6px 12px;
+    border-radius: 50px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+/* TIMELINE */
+.timeline {
+    border-left: 4px solid #dc3545;
+    padding-left: 20px;
+}
+
+.timeline-item {
+    margin-bottom: 25px;
+}
+
+.timeline-item h5 {
+    font-weight: 700;
+    color: #dc3545;
+}
+
+.footer-box {
+    background: #fff5f6;
+    padding: 25px;
+    border-radius: 25px;
+    text-align: center;
+    border: 1px solid #ffd6da;
+}
+.footer-box .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(220,53,69,0.3);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <!-- HERO -->
+    <div class="hero-section mb-5">
+        <h1>🩸 NAFAS - نفس</h1>
+        <p>Plateforme tunisienne du don de sang</p>
+        <p><strong>Créée en 2026 par Chahd Trabelsi</strong></p>
+        <p>Étudiante à l’<strong>ISET Sfax</strong></p>
+    </div>
+
+    <!-- INTRO -->
+    <div class="naf-card">
+        <h3 class="section-title">🌍 Notre mission</h3>
+        <p>
+            NAFAS est une plateforme tunisienne dédiée à l’amélioration du processus de don de sang.
+            Elle connecte les donneurs aux hôpitaux afin de faciliter les dons, sauver des vies et
+            répondre rapidement aux urgences médicales.
+        </p>
+        <span class="badge-nafas">❤️ Sauver des vies grâce à la technologie</span>
+    </div>
+
+    <!-- HISTOIRE -->
+    <div class="naf-card">
+        <h3 class="section-title">📖 Notre histoire</h3>
+
+        <div class="timeline">
+
+            <div class="timeline-item">
+                <h5>2026 – L’idée</h5>
+                <p>
+                    NAFAS a été imaginée par <strong>Chahd Trabelsi</strong>, étudiante à l’ISET Sfax,
+                    dans le cadre du projet de la matiére de la language Django sur la gestion des  difficultés rencontrées dans la gestion des dons de sang en Tunisie.
+                </p>
+            </div>
+
+            <div class="timeline-item">
+                <h5>Développement</h5>
+                <p>
+                    Le projet a été conçu pour digitaliser le parcours du donneur :
+                    éligibilité, demandes urgentes, campagnes et notifications intelligentes.
+                </p>
+            </div>
+
+            <div class="timeline-item">
+                <h5>Aujourd’hui</h5>
+                <p>
+                    NAFAS relie donneurs et hôpitaux pour rendre le don plus simple, rapide et organisé.
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- OBJECTIFS -->
+    <div class="naf-card">
+        <h3 class="section-title">🎯 Nos objectifs</h3>
+
+        <ul>
+            <li>✔ Simplifier le don de sang en Tunisie</li>
+            <li>✔ Réduire le temps de réponse en urgence</li>
+            <li>✔ Améliorer la communication hôpital / donneur</li>
+            <li>✔ Encourager la solidarité citoyenne</li>
+        </ul>
+    </div>
+
+    <!-- FOOTER MESSAGE -->
+    <div class="footer-box text-center p-4">
+
+    <h4>❤️ Un projet humain avant tout</h4>
+
+    <p class="mb-3 fst-italic">
+        “Chaque don de sang est un souffle de vie.”
+    </p>
+
+    <a href="{% url 'home' %}" class="btn btn-danger rounded-pill px-4 py-2 fw-semibold">
+        
+    </a>
+
+</div>
+
+</div>
+
+{% endblock %}

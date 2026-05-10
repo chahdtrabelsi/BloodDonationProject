@@ -1,0 +1,21 @@
+{% extends "accounts/admin/base_admin.html" %}
+
+{% block admin_content %}
+
+<h2>🗺 Demandes par ville</h2>
+
+<table class="table table-striped mt-3">
+    <tr>
+        <th>Ville</th>
+        <th>Total</th>
+    </tr>
+
+    {% for item in data %}
+<tr>
+    <td>{{ item.hopital__ville }}</td>
+    <td>{{ item.total }}</td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

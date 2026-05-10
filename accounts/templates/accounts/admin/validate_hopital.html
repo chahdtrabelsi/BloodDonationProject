@@ -1,0 +1,28 @@
+{% extends "accounts/admin/base_admin.html" %}
+
+{% block admin_content %}
+
+<h2>🏥 Hôpitaux à valider</h2>
+
+<table class="table">
+    <tr>
+        <th>Nom</th>
+        <th>Ville</th>
+        <th>Action</th>
+    </tr>
+
+    {% for h in hopitals %}
+    <tr>
+        <td>{{ h.nom }}</td>
+        <td>{{ h.ville }}</td>
+        <td>
+            <form method="post" action="{% url 'validate_hopital' h.id %}">
+                {% csrf_token %}
+                <button class="btn btn-danger btn-sm">Valider</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

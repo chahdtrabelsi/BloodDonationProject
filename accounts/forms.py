@@ -34,27 +34,12 @@ class DonneurUpdateForm(forms.ModelForm):
         model = Donneur
         fields = ['groupe_sanguin', 'sexe', 'date_naissance', 'ville']
         
+from django import forms
+
 class MedicalProfileForm(forms.ModelForm):
+
+    poids = forms.FloatField(required=True)
+
     class Meta:
         model = MedicalProfile
         exclude = ['donneur']
-
-        widgets = {
-            'poids': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Entrez votre poids (kg)'
-            }),
-
-            'a_tension': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'diabete': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'anemie': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'maladie_sanguine': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-        }
-
-        labels = {
-            'poids': 'Poids (kg)',
-            'a_tension': 'Tension',
-            'diabete': 'Diabète',
-            'anemie': 'Anémie',
-            'maladie_sanguine': 'Maladie sanguine',
-        }

@@ -193,67 +193,58 @@
     </div>
 
     <!-- ROW : CARTES À GAUCHE (verticales bien visibles) + VIDÉO RÉDUITE À DROITE -->
-    <div class="row align-items-stretch g-4">
-        <!-- LEFT: Cartes -->
+     <!-- MAIN GRID -->
+    <div class="row g-4">
+
+        <!-- LEFT CARDS -->
         <div class="col-lg-6">
-            <!-- Carte 1 -->
-            <a href="{% url 'eligibiliteGlobale' %}" class="naf-card position-relative">
 
-            <div class="card-inner">
-            <div class="card-icon">❓</div>
-
-                <div class="card-content">
-                <h5>Suis-je éligible au don de sang ?</h5>
-                <p>Âge, santé, médicaments – testez votre éligibilité en 2 min (normes tunisiennes).</p>
+            <!-- CARD 1 -->
+            <a href="{% url 'eligibiliteGlobale' %}" class="naf-card">
+                <div class="card-inner">
+                    <div class="card-icon">❓</div>
+                    <div class="card-content">
+                        <h5>Suis-je éligible ?</h5>
+                        <p>Test rapide selon critères médicaux.</p>
+                    </div>
                 </div>
-            </div>
-
             </a>
-            <!-- Carte 2 -->
-            <div class="vertical-card">
+
+            <!-- CARD 2 -->
+            <a href="{% url 'processus-don' %}" class="naf-card">
                 <div class="card-inner">
                     <div class="card-icon">🩸</div>
                     <div class="card-content">
-                        <h5>Processus du don de sang</h5>
-                        <p>Accueil, questionnaire médical, prélèvement de 450ml, collation – simple et sécurisé.</p>
+                        <h5>Processus du don</h5>
+                        <p>Étapes simples : accueil, don, repos sécurisé.</p>
                     </div>
                 </div>
-            </div>
-            <!-- Carte 3 -->
-            <div class="vertical-card">
+            </a>
+
+            <!-- CARD 3 -->
+            <a href="{% url 'notre_histoire' %}" class="naf-card">
                 <div class="card-inner">
                     <div class="card-icon">❤️</div>
                     <div class="card-content">
-                        <h5>NAFAS – Notre histoire</h5>
-                        <p>Née en Tunisie pour digitaliser la générosité et connecter chaque donneur aux hôpitaux.</p>
+                        <h5>NAFAS</h5>
+                        <p>Une initiative tunisienne pour sauver des vies.</p>
                     </div>
                 </div>
-            </div>
-            <!-- Carte 4 (bonus réseau) -->
-            <div class="vertical-card">
-                <div class="card-inner">
-                    <div class="card-icon">🏥</div>
-                    <div class="card-content">
-                        <h5>Réseau hospitalier tunisien</h5>
-                        <p>Partenariat avec les centres de transfusion sanguine dans tout le pays.</p>
-                    </div>
-                </div>
+            </a>
+
+        </div>
+
+        <!-- VIDEO -->
+        <div class="col-lg-6">
+            <div class="video-wrapper">
+                <video controls>
+                    <source src="{% static 'videos/Nafas2.mp4' %}" type="video/mp4">
+                </video>
             </div>
         </div>
 
-        <!-- RIGHT: Vidéo plus petite (hauteur réduite) -->
-        <div class="col-lg-6">
-            <div class="video-wrapper h-100 d-flex flex-column justify-content-center">
-                <video controls preload="metadata" poster="{% static 'images/video-poster.jpg' %}">
-                    <source src="{% static 'videos/Nafas.mp4' %}" type="video/mp4">
-                    Votre navigateur ne supporte pas la lecture vidéo.
-                </video>
-                <p class="text-muted mt-2 mb-0 text-center small">
-                    🎬 Découvrez NAFAS – Le don de sang qui sauve des vies
-                </p>
-            </div>
-        </div>
     </div>
+
 
     <!-- SECTION À PROPOS (détails, chiffres, message) -->
     <div class="about-section mt-5">
@@ -276,7 +267,7 @@
             <div class="col-md-5">
                 <div class="heart-quote">
                     <span style="font-size: 2rem;">💬</span>
-                    <p class="mt-2 mb-0 fst-italic">“NAFAS n’est pas qu’une application, c’est un pont entre la volonté de donner et l’urgence de recevoir.”</p>
+                    <p class="mt-2 mb-0 fst-italic">“NAFAS n’est pas qu’une plateform, c’est un pont entre la volonté de donner et l’urgence de recevoir.”</p>
                     <footer class="mt-2 fw-semibold">— Équipe NAFAS Tunisie</footer>
                 </div>
             </div>
@@ -294,7 +285,7 @@
         </div>
         <div class="mt-2">
             <a href="{% url 'login' %}" class="btn btn-blood btn-lg px-5 py-3">
-                🤝 Rejoignez-nous – Devenez donneur
+                Accéder à mon espace
             </a>
         </div>
         <p class="small text-muted mt-4">Ensemble, sauvons des vies, un don à la fois.</p>

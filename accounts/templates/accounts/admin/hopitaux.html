@@ -1,0 +1,70 @@
+{% extends "accounts/admin/base_admin.html" %}
+
+{% block admin_content %}
+
+<h2 class="mb-3">🏥 Gestion des Hôpitaux</h2>
+
+<div class="card shadow-sm p-3">
+
+    <table class="table table-hover align-middle">
+
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Adresse</th>
+                <th>Ville</th>
+                <th>Agrement</th>
+                <th>Statut</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        {% for h in hopitaux %}
+            <tr>
+
+                <td><strong>{{ h.nom }}</strong></td>
+                <td>{{ h.adresse }}</td>
+                <td>{{ h.ville }}</td>
+                <td>{{ h.agrement }}</td>
+
+                <td>
+                    {% if h.valide %}
+                        <span class="badge bg-success">Validé</span>
+                    {% else %}
+                        <span class="badge bg-warning text-dark">En attente</span>
+                    {% endif %}
+                </td>
+
+                <td>
+
+                    {% if not h.valide %}
+                    <form method="post" action="{% url 'validate_hopital' h.id %}">
+                        {% csrf_token %}
+                        <button class="btn btn-danger btn-sm">
+                            ✔ Valider
+                        </button>
+                    </form>
+                    {% else %}
+                        <span class="text-success">✔ OK</span>
+                    {% endif %}
+
+                </td>
+
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="6" class="text-center text-muted">
+                    Aucun hôpital trouvé
+                </td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

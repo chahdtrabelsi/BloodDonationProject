@@ -4,21 +4,39 @@ from .models import DemandeUrgente
 from django.contrib.auth.decorators import login_required
 from .models import DemandeUrgente
 from django.shortcuts import render, get_object_or_404
+from datetime import date
+
+from django.contrib import messages
+from django.shortcuts import redirect, render
 
 def creer_demande(request):
+
+    hopital = request.user.hopital
+
+    # ✅ verifier validation admin
+    if not hopital.valide:
+        messages.error(
+            request,
+            "Votre compte hôpital n'est pas encore validé par l'administration."
+        )
+        return redirect("dashboard_hopital")
+
     if request.method == "POST":
+
         form = DemandeUrgenteForm(request.POST)
 
         if form.is_valid():
-            demande = form.save(commit=False)  
 
-            demande.hopital = request.user.hopital  
+            demande = form.save(commit=False)
 
-            demande.statut = "Ouvert"  
+            demande.hopital = hopital
+            demande.statut = "Ouvert"
 
             demande.save()
 
-            return redirect('demandes:liste_demandes')
+            messages.success(request, "Demande publiée avec succès")
+
+            return redirect('dashboard_hopital')
 
     else:
         form = DemandeUrgenteForm()
@@ -86,4 +104,13 @@ def cloturer_demande(request, id):
     demande.statut = "Clôturé"
     demande.save()
 
-    return redirect('accounts:dashboard_hopital')
+    return redirect('dashboard_hopital')
+def reouvrir_demande(request, id):
+    demande = get_object_or_404(DemandeUrgente, id=id)
+
+    if demande.statut == "Clôturé" and demande.delai >= date.today():
+        demande.statut = "Ouvert"
+        demande.save()
+
+    return redirect('dashboard_hopital')
+

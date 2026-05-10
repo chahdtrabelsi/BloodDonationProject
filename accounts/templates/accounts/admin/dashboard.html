@@ -1,0 +1,221 @@
+{% extends "accounts/admin/base_admin.html" %}
+
+{% block admin_content %}
+
+<style>
+.card-red {
+    background: linear-gradient(180deg, #c0392b, #e74c3c);
+    color: white;
+    border-radius: 12px;
+}
+
+.card {
+    border-radius: 12px;
+}
+
+h2, h4 {
+    font-weight: 600;
+}
+</style>
+
+<h2 class="mb-3">👤 Dashboard Admin</h2>
+
+<!-- ================= KPIs ================= -->
+<div class="row g-3 mb-4">
+
+    <div class="col-md-3">
+        <div class="card-red text-center p-3">
+            <h6>Donneurs</h6>
+            <h2>{{ total_donneurs }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card-red text-center p-3">
+            <h6>Dons</h6>
+            <h2>{{ total_dons }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card-red text-center p-3">
+            <h6>Campagnes</h6>
+            <h2>{{ campagnes_total }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card-red text-center p-3">
+            <h6>Hôpitaux</h6>
+            <h2>{{ total_hopitals }}</h2>
+        </div>
+    </div>
+
+</div>
+
+<div class="row g-3 mb-4">
+
+    <div class="col-md-3">
+        <div class="card-red text-center p-3">
+            <h6>Demandes actives</h6>
+            <h2>{{ demandes_actives }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card-red text-center p-3">
+            <h6>Hôpitaux en attente</h6>
+            <h2>{{ hopitals_en_attente }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card-red text-center p-3">
+            <h6>Campagnes en cours</h6>
+            <h2>{{ campagnes_bientot}}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card-red text-center p-3">
+            <h6>Donneurs éligibles</h6>
+            <h2>{{ donneurs_eligible }}</h2>
+        </div>
+    </div>
+
+</div>
+
+<!-- ================= TITLE ================= -->
+<h3 class="mb-3">📊 Statistiques de la plateforme</h3>
+
+<!-- ================= MONTHLY CHARTS ================= -->
+<div class="row g-4">
+
+    <div class="col-md-6">
+        <div class="card shadow-sm p-4">
+            <h6>📈 Donneurs par mois</h6>
+            <canvas id="donneurChart"></canvas>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm p-4">
+            <h6>🏥 Hôpitaux par mois</h6>
+            <canvas id="hopitalChart"></canvas>
+        </div>
+    </div>
+
+</div>
+
+<!-- ================= PIE + BAR ================= -->
+<div class="row g-4 mt-2">
+
+    <div class="col-md-4">
+        <div class="card shadow-sm p-3">
+            <h6>🩸 Groupes sanguins</h6>
+            <canvas id="groupChart"></canvas>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm p-3">
+            <h6>📋 Demandes par groupe</h6>
+            <canvas id="demandesGroupChart"></canvas>
+        </div>
+    </div>
+    <!-- ================= CAMPAIGNE CHART ================= -->
+
+
+
+    <div class="col-md-4">
+        <div class="card shadow-sm p-3">
+            <h6>🎯 Statut des campagnes</h6>
+            <canvas id="campagneChart"></canvas>
+        </div>
+    </div>
+
+
+    
+
+</div>
+
+
+
+<!-- ================= CHART JS ================= -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+// Donneurs par mois
+new Chart(document.getElementById('donneurChart'), {
+    type: 'bar',
+    data: {
+        labels: {{ donneurs_labels|safe }},
+        datasets: [{
+            label: 'Donneurs',
+            data: {{ donneurs_data|safe }},
+            backgroundColor: '#1a70fb',
+            borderRadius: 10
+        }]
+    }
+});
+
+// Hôpitaux par mois
+new Chart(document.getElementById('hopitalChart'), {
+    type: 'bar',
+    data: {
+        labels: {{ hopital_labels|safe }},
+        datasets: [{
+            label: 'Hôpitaux',
+            data: {{ hopital_data|safe }},
+            backgroundColor: '#084f1a',
+            borderRadius: 10
+        }]
+    }
+});
+
+// Groupes sanguins
+new Chart(document.getElementById('groupChart'), {
+    type: 'pie',
+    data: {
+        labels: {{ donneurs_group_labels|safe }},
+        datasets: [{
+            data: {{ donneurs_group_data|safe }},
+            backgroundColor: ['#e74c3c','#3498db','#2ecc71','#f1c40f','#9b59b6','#1abc9c']
+        }]
+    }
+});
+
+// Demandes par groupe
+new Chart(document.getElementById('demandesGroupChart'), {
+    type: 'pie',
+    data: {
+        labels: {{ demandes_group_labels|safe }},
+        datasets: [{
+            data: {{ demandes_group_data|safe }},
+            backgroundColor: ['#c0392b','#e67e22','#f39c12','#8e44ad']
+        }]
+    }
+});
+
+
+
+// 🎯 Campagnes (FIXED)
+new Chart(document.getElementById('campagneChart'), {
+    type: 'pie',
+    data: {
+        labels: {{ campagnes_chart_labels|safe }},
+        datasets: [{
+            data: {{ campagnes_chart_data|safe }},
+            backgroundColor: [
+                '#2ecc71',
+                '#f1c40f',
+                '#e74c3c'
+            ]
+        }]
+    }
+});
+
+</script>
+
+{% endblock %}

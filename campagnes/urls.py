@@ -8,7 +8,7 @@ urlpatterns = [
 
     # 🏥 Hôpital
     path('creer/', views.creer_campagne, name='creer_campagne'),
-    path('mes-campagnes/', views.mes_campagnes, name='mes_campagnes'),
+    
     path('creneau/ajouter/<int:campagne_id>/', views.ajouter_creneau, name='ajouter_creneau'),
 
     # 🩸 Donneur (INSCRIPTION CRÉNEAU)
@@ -18,4 +18,12 @@ urlpatterns = [
     views.annuler_participation,
     name='annuler_participation'
 ),
+    path('creneau/annuler/<int:id>/', views.annuler_creneau, name='annuler_creneau'),
+    path('campagne/annuler/<int:id>/', views.annuler_campagne, name='annuler_campagne'),
+    path(
+    'creneau/<int:id>/participants/',
+    views.voir_participants_creneau,
+    name='participants_creneau'
+),
+    
 ]

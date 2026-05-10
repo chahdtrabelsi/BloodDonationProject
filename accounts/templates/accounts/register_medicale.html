@@ -1,6 +1,3 @@
-{% extends 'base.html' %}
-{% block content %}
-
 <style>
 .auth-wrapper{
     display:flex;
@@ -25,17 +22,43 @@
     font-weight:bold;
 }
 
-.form-check{
-    margin:5px 0;
+/* form inputs */
+.auth-card input[type="number"],
+.auth-card input[type="text"],
+.auth-card select{
+    width:100%;
+    padding:10px;
+    border:1px solid #ddd;
+    border-radius:8px;
+    margin-top:5px;
+    margin-bottom:15px;
 }
 
+/* checkboxes */
+.form-check{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:10px 0;
+    font-size:15px;
+}
+
+/* button */
 .btn-red{
     background:linear-gradient(180deg,#c0392b,#e74c3c);
     color:white;
     border:none;
     width:100%;
-    padding:10px;
+    padding:12px;
     border-radius:30px;
+    font-weight:bold;
+    margin-top:15px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.btn-red:hover{
+    opacity:0.9;
 }
 </style>
 
@@ -43,38 +66,32 @@
 
     <div class="auth-card">
 
-        {% if edit_mode %}
-    <h2>✏ Modifier dossier médical</h2>
-{% else %}
-    <h2>📄 Dossier médical</h2>
-{% endif %}
+        <h2 class="auth-title">📄 Dossier médical</h2>
 
         <form method="post">
             {% csrf_token %}
 
-            <div class="mb-2">
-                <label>Poids</label>
-                {{ form.poids }}
+            <label>Poids (kg)</label>
+            {{ form.poids }}
+
+            <div class="form-check">
+                {{ form.a_tension }} <label>Tension artérielle</label>
             </div>
 
             <div class="form-check">
-                {{ form.a_tension }} Tension
+                {{ form.diabete }} <label>Diabète</label>
             </div>
 
             <div class="form-check">
-                {{ form.diabete }} Diabète
+                {{ form.anemie }} <label>Anémie</label>
             </div>
 
             <div class="form-check">
-                {{ form.anemie }} Anémie
+                {{ form.maladie_sanguine }} <label>Maladie sanguine</label>
             </div>
 
-            <div class="form-check mb-3">
-                {{ form.maladie_sanguine }} Maladie sanguine
-            </div>
-
-            <button class="btn-red">
-                Terminer inscription
+            <button type="submit" class="btn-red">
+                Enregistrer
             </button>
 
         </form>
@@ -82,5 +99,3 @@
     </div>
 
 </div>
-
-{% endblock %}

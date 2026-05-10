@@ -1,0 +1,76 @@
+{% extends "accounts/admin/base_admin.html" %}
+
+{% block admin_content %}
+
+<h2>🎯 Historiques des Campagnes</h2>
+
+{% for hopital, campagnes in campagnes_by_hopital.items %}
+
+<div class="card shadow-sm p-3 mt-4">
+
+    <h4>🏥 {{ hopital }}</h4>
+
+    <table class="table table-hover mt-3">
+
+        <thead>
+        <tr>
+            <th>Campagne</th>
+            <th>Lieu</th>
+            <th>Places</th>
+            <th>Inscrits</th>
+            <th>Remplissage</th>
+            <th>État</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        {% for c in campagnes %}
+
+        <tr>
+
+            <td>{{ c.campagne.nom }}</td>
+            <td>{{ c.campagne.lieu }}</td>
+
+            <td>{{ c.places }}</td>
+            <td>{{ c.taken }}</td>
+
+            <!-- 🧠 status remplissage -->
+            <td>
+                {% if c.status_fill == "Succès" %}
+                    <span class="badge bg-success">Succès</span>
+
+                {% elif c.status_fill == "Partiel" %}
+                    <span class="badge bg-warning text-dark">Partiel</span>
+
+                {% else %}
+                    <span class="badge bg-danger">Faible</span>
+                {% endif %}
+            </td>
+
+            <!-- ⏳ status temps -->
+            <td>
+                {% if c.status_time == "A_venir" %}
+                    <span class="badge bg-info">À venir</span>
+
+                {% elif c.status_time == "En_cours" %}
+                    <span class="badge bg-primary">En cours</span>
+
+                {% else %}
+                    <span class="badge bg-secondary">Terminée</span>
+                {% endif %}
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+    body {
+        background: #f4f6f9;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        width: 250px;
+        height: 100vh;
+        background: linear-gradient(180deg, #c0392b, #e74c3c);
+        padding: 20px;
+        color: white;
+    }
+
+    .sidebar a {
+        display: block;
+        color: white;
+        text-decoration: none;
+        padding: 10px;
+        margin-bottom: 5px;
+        border-radius: 8px;
+    }
+
+    .sidebar a:hover {
+        background: rgba(255,255,255,0.2);
+    }
+
+    .admin-content {
+        margin-left: 270px;
+        padding: 20px;
+    }
+</style>
+
+<div class="sidebar">
+
+    <h4>🩸 Admin Panel</h4>
+    <hr>
+
+    <a href="{% url 'admin_dashboard' %}">
+        📊 Dashboard
+    </a>
+
+    <a href="{% url 'admin_map' %}">
+        🗺 Map
+    </a>
+
+    <a href="{% url 'admin_donneurs' %}">
+        👥 Donneurs
+    </a>
+
+    <a href="{% url 'admin_hopitaux' %}">
+        🏥 Hôpitaux
+    </a>
+    <a href="{% url 'admin_demandes_actives' %}">
+    🚨 Gestion des demandes
+</a>
+    <a href="{% url 'admin_campagnes' %}">
+    🎯 Campagnes
+</a>
+
+</div>
+
+<div class="admin-content">
+
+    {% block admin_content %}
+    {% endblock %}
+
+</div>
+
+{% endblock %}

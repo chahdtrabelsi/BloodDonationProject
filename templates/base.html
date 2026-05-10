@@ -35,6 +35,12 @@
                 </a>
             {% endif %}
 
+            {% if user.is_superuser %}
+                <a class="btn btn-dark me-2" href="{% url 'admin_dashboard' %}">
+                Admin
+                </a>
+            {% endif %}
+
             <a class="btn btn-danger" href="{% url 'logout' %}">
                 Logout
             </a>

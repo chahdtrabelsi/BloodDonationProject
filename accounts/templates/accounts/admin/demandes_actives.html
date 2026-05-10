@@ -1,0 +1,117 @@
+{% extends "accounts/admin/base_admin.html" %}
+
+{% block admin_content %}
+
+<h2 class="mb-4">📋 Gestion des demandes</h2>
+
+<!-- ================= ACTIVE ================= -->
+<h4 class="mb-3">🟢 Demandes actives</h4>
+
+<div class="card shadow-sm p-3 mb-5">
+
+<table class="table table-hover">
+
+<thead>
+<tr>
+    <th>Groupe</th>
+    <th>Hôpital</th>
+    <th>Quantité</th>
+    <th>Réponses</th>
+    <th>Statut</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for d in demandes_actives %}
+
+<tr>
+
+    <td><span class="badge bg-danger">{{ d.groupe_sanguin }}</span></td>
+
+    <td>{{ d.hopital.nom }}</td>
+
+    <td>{{ d.quantite }}</td>
+
+    <td>{{ d.nb_reponses }}</td>
+
+    <td>
+        {% if d.nb_reponses >= d.quantite %}
+            <span class="badge bg-success">Satisfait</span>
+        {% else %}
+            <span class="badge bg-danger">Non satisfait</span>
+        {% endif %}
+    </td>
+
+</tr>
+
+{% empty %}
+<tr>
+    <td colspan="5" class="text-center text-muted">Aucune demande active</td>
+</tr>
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+<!-- ================= CLÔTUREES ================= -->
+<h4 class="mb-3">🔴 Demandes clôturées</h4>
+
+<div class="card shadow-sm p-3">
+
+<table class="table table-hover">
+
+<thead>
+<tr>
+    <th>Groupe</th>
+    <th>Hôpital</th>
+    <th>Quantité</th>
+    <th>Réponses</th>
+    <th>Résultat</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for d in demandes_cloturees %}
+
+<tr>
+
+    <td><span class="badge bg-danger">{{ d.groupe_sanguin }}</span></td>
+
+    <td>{{ d.hopital.nom }}</td>
+
+    <td>{{ d.quantite }}</td>
+
+    <td>{{ d.nb_reponses }}</td>
+
+    <td>
+    {% if d.nb_reponses >= d.quantite %}
+        <span class="badge bg-success">Satisfait</span>
+
+    {% elif d.nb_reponses > 0 %}
+        <span class="badge bg-warning text-dark">Partiel</span>
+
+    {% else %}
+        <span class="badge bg-danger">Non satisfait</span>
+    {% endif %}
+</td>
+
+</tr>
+
+{% empty %}
+<tr>
+    <td colspan="5" class="text-center text-muted">Aucune demande clôturée</td>
+</tr>
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% endblock %}

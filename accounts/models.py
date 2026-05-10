@@ -18,6 +18,9 @@ class Donneur(models.Model):
     date_naissance = models.DateField()
     ville = models.CharField(max_length=100)
     actif = models.BooleanField(default=True)  
+    @property
+    def medical(self):
+        return getattr(self, 'medicalprofile', None)
 
     def __str__(self):
         return f"{self.user.username} ({self.groupe_sanguin})"
@@ -36,50 +39,76 @@ class Donneur(models.Model):
         return dernier_don.date_don + timedelta(days=84)
 
     def est_eligible(self):
-        mp = getattr(self, 'medicalprofile', None)
+        mp = self.medical
 
-        if mp is None:
-        
-            return False
+        if mp.a_tension:
+            return False, "Tension"
+        if mp.diabete:
+            return False, "Diabète"
+        if mp.anemie:
+            return False, "Anémie"
+        if mp.maladie_sanguine:
+            return False, "Maladie sanguine"
+        if not mp.poids:
+            return False, "Poids manquant"
 
-
-        if mp.a_tension or mp.diabete or mp.anemie or mp.maladie_sanguine:
-            return False
-
-        if mp.poids and mp.poids < 50:
-            return False
-
-        if not mp.dernier_don_medical_ok:
-            return False
-
-    
         prochaine = self.prochaine_date_don()
+        if prochaine and date.today() < prochaine:
+            return False, "Période d'attente"
 
-        if prochaine is None:
-            return True
-
-        return date.today() >= prochaine
-    
+        return True, "OK"
 class Hopital(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     nom = models.CharField(max_length=200)
     adresse = models.CharField(max_length=200)
     ville = models.CharField(max_length=100)
     agrement = models.CharField(max_length=50)
-    valide = models.BooleanField(default=False)  # validation par admin
+    valide = models.BooleanField(default=False)  
 
     def __str__(self):
         return self.nom
-    @property
-    def medical(self):
-        return getattr(self, 'medicalprofile', None)
+    
 
 class MedicalProfile(models.Model):
     donneur = models.OneToOneField(Donneur, on_delete=models.CASCADE)
 
-    poids = models.PositiveIntegerField()
+    poids = models.FloatField(null=True, blank=True)
+    taille = models.FloatField(null=True, blank=True)
     a_tension = models.BooleanField(default=False)
     diabete = models.BooleanField(default=False)
     anemie = models.BooleanField(default=False)
     maladie_sanguine = models.BooleanField(default=False)
     dernier_don_medical_ok = models.BooleanField(default=True)
+
+from django.db import models
+from accounts.models import Donneur
+
+class Notification(models.Model):
+
+    TYPE_CHOICES = [
+        ('info', 'Info'),
+        ('creneau', 'Créneau'),
+        ('campagne', 'Campagne'),
+        ('systeme', 'Système'),
+    ]
+
+    donneur = models.ForeignKey(
+        Donneur,
+        on_delete=models.CASCADE,
+        related_name="notifications"
+    )
+
+    message = models.TextField()
+
+    type = models.CharField(
+        max_length=20,
+        choices=TYPE_CHOICES,
+        default='info'
+    )
+
+    lu = models.BooleanField(default=False) 
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.donneur.user.username} - {self.type}"

@@ -5,6 +5,9 @@ from .forms import CreneauForm, CampagneForm
 from campagnes.models import Campagne, InscriptionCampagne, Creneau
 from core.utils import est_compatible_campagne
 from django.utils.timezone import now
+from accounts.models import Notification
+from campagnes.models import Campagne, InscriptionCampagne, Creneau
+from accounts.models import Notification,Donneur
 
 @login_required
 def creer_campagne(request):
@@ -16,23 +19,11 @@ def creer_campagne(request):
         campagne.save()
 
         messages.success(request, "Campagne créée avec succès")
-        return redirect('campagnes:mes_campagnes')
+        return redirect('dashboard_hopital')
 
     return render(request, 'campagnes/creer_campagne.html', {'form': form})
 
 
-@login_required
-def mes_campagnes(request):
-    hopital = request.user.hopital
-
-    campagnes = Campagne.objects.filter(
-        hopital=hopital
-    ).prefetch_related('creneaux')
-
-    return render(request, 'campagnes/mes_campagnes.html', {
-        'campagnes': campagnes,
-        'hopital': hopital
-    })
 
 
 def index(request):
@@ -94,7 +85,7 @@ def ajouter_creneau(request, campagne_id):
             creneau.save()
 
             messages.success(request, "Créneau ajouté")
-            return redirect('campagnes:mes_campagnes')
+            return redirect('dashboard_hopital')
 
     return render(request, 'campagnes/ajouter_creneau.html', {
         'form': form,
@@ -122,3 +113,70 @@ def annuler_participation(request, inscription_id):
 
     messages.success(request, "✔ Participation annulée avec succès")
     return redirect('dashboard_donneur')
+
+def annuler_creneau(request, id):
+
+    creneau = get_object_or_404(Creneau, id=id)
+
+    # 👥 récupérer les donneurs inscrits
+    inscriptions = InscriptionCampagne.objects.filter(creneau=creneau)
+    donneurs = [i.donneur for i in inscriptions]
+
+    # ❌ supprimer inscriptions
+    inscriptions.delete()
+
+    # 🔔 notifications
+    for d in donneurs:
+        Notification.objects.create(
+            donneur=d,
+            message=f"⚠️ Le créneau {creneau} a été annulé.",
+            type="creneau"
+        )
+
+    # ❌ supprimer créneau
+    creneau.delete()
+
+    return redirect('dashboard_hopital')
+
+def annuler_campagne(request, id):
+
+    campagne = get_object_or_404(Campagne, id=id)
+
+    # 👥 tous les inscrits à la campagne
+    inscriptions = InscriptionCampagne.objects.filter(
+        creneau__campagne=campagne
+    )
+    donneurs = Donneur.objects.filter(
+    id__in=inscriptions.values_list('donneur_id', flat=True)
+)
+
+    # ❌ supprimer inscriptions
+    inscriptions.delete()
+
+    # ❌ supprimer créneaux
+    campagne.creneaux.all().delete()
+
+    # 🔔 notifications
+    for d in donneurs:
+        Notification.objects.create(
+            donneur=d,
+            message=f"🚨 La campagne {campagne.nom} a été annulée.",
+            type="campagne"
+        )
+
+    # ❌ supprimer campagne
+    campagne.delete()
+
+    return redirect('accounts:dashboard_hopital')
+
+def voir_participants_creneau(request, id):
+    creneau = get_object_or_404(Creneau, id=id)
+
+    participants = InscriptionCampagne.objects.filter(
+        creneau=creneau
+    ).select_related('donneur', 'donneur__user')
+
+    return render(request, "campagnes/participants_creneau.html", {
+        "creneau": creneau,
+        "participants": participants
+    })
